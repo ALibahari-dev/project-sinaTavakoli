@@ -1,5 +1,0 @@
-{
-    "require": {
-        "hoa/visitor": "^2.17"
-    }
-}
