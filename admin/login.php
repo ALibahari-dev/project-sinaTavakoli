@@ -1,57 +1,29 @@
 <?php
 session_start();
-require_once '../inc/database.php';
-require_once '../inc/functions.php';
+require_once '../db.php';
 
-// Simple debug mode - remove in production
- $debug = false;
+// If user is already logged in, redirect to dashboard
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header('Location: dashboard.php');
+    exit;
+}
 
+// Process login form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
+    $username = $_POST['username'];
     $password = $_POST['password'];
     
-    if ($debug) {
-        echo "<h3>Debug Info:</h3>";
-        echo "<p>Username: " . htmlspecialchars($username) . "</p>";
-        echo "<p>Password length: " . strlen($password) . "</p>";
-    }
+    $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = ?");
+    $stmt->execute([$username]);
+    $user = $stmt->fetch();
     
-    try {
-        $db = Database::getInstance();
-        
-        // Get admin user
-        $admin = $db->fetchOne(
-            "SELECT * FROM admin WHERE username = ?",
-            [$username]
-        );
-        
-        if ($debug) {
-            if ($admin) {
-                echo "<p>User found in database</p>";
-                echo "<p>Stored password hash: " . $admin['password'] . "</p>";
-                echo "<p>Password verify result: " . (password_verify($password, $admin['password']) ? 'true' : 'false') . "</p>";
-            } else {
-                echo "<p>User NOT found in database</p>";
-            }
-        }
-        
-        if ($admin && password_verify($password, $admin['password'])) {
-            // Successful login
-            $_SESSION['admin_id'] = $admin['id'];
-            $_SESSION['admin_username'] = $admin['username'];
-            $_SESSION['login_time'] = time();
-            
-            // Redirect to dashboard
-            header('Location: dashboard.php');
-            exit;
-        } else {
-            $error = 'Invalid username or password';
-        }
-    } catch (Exception $e) {
-        $error = 'Login system error. Please try again.';
-        if ($debug) {
-            $error .= ' (' . $e->getMessage() . ')';
-        }
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['admin_logged_in'] = true;
+        $_SESSION['admin_id'] = $user['id'];
+        header('Location: dashboard.php');
+        exit;
+    } else {
+        $error = "Invalid username or password";
     }
 }
 ?>
@@ -61,44 +33,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Sina Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Admin Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0a0e27;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 10px;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #f9c74f;
+            box-shadow: 0 0 0 0.25rem rgba(249, 199, 79, 0.25);
+            color: #fff;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f9c74f 0%, #ffd166 100%);
+            color: #0a0e27;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(249, 199, 79, 0.3);
+        }
+        .alert {
+            background: rgba(249, 199, 79, 0.1);
+            border: 1px solid rgba(249, 199, 79, 0.3);
+            color: #f9c74f;
+            border-radius: 10px;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-yellow-400">Admin Login</h1>
-            <p class="text-gray-400 mt-2">Sina Portfolio CMS</p>
+<body>
+    <div class="login-container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Admin Login</h2>
+            <p class="text-muted">Sina Tavakoli Portfolio</p>
         </div>
         
         <?php if (isset($error)): ?>
-            <div class="bg-red-500 text-white p-3 rounded mb-4">
-                <?php echo $error; ?>
-            </div>
+        <div class="alert alert-danger" role="alert">
+            <?php echo $error; ?>
+        </div>
         <?php endif; ?>
         
-        <form method="POST">
-            <div class="mb-6">
-                <label class="block text-gray-300 mb-2">Username</label>
-                <input type="text" 
-                       name="username" 
-                       required
-                       value="admin"
-                       class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-yellow-400">
+        <form method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            
-            <div class="mb-6">
-                <label class="block text-gray-300 mb-2">Password</label>
-                <input type="password" 
-                       name="password" 
-                       required
-                       value="admin123"
-                       class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-yellow-400">
+            <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            
-            <button type="submit" 
-                    class="w-full bg-yellow-400 text-gray-900 font-bold py-3 rounded-lg hover:bg-yellow-300 transition">
-                Login
-            </button>
-        </form
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
