@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بلک فرایدی ۲۰۲۴ - انقلاب قیمت‌ها</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Vazir Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            overflow-x: hidden;
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Cursor */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(249, 199, 79, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.15s ease-out;
+            transform: translate(-50%, -50%);
+        }
+        
+        .cursor-follower {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #f9c74f;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+        
+        .cursor.hover {
+            width: 40px;
+            height: 40px;
+            background: rgba(249, 199, 79, 0.1);
+        }
+        
+        /* Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 50%);
+            z-index: -2;
+        }
+        
+        .grid-pattern {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(249, 199, 79, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(249, 199, 79, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+        
+        /* Navigation */
+        nav {
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 10, 0.8);
+            border-bottom: 1px solid rgba(249, 199, 79, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        /* Product Cards */
+        .product-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(249, 199, 79, 0.3);
+            box-shadow: 0 20px 40px rgba(249, 199, 79, 0.1);
+        }
+        
+        .product-card:hover::before {
+            opacity: 1;
+        }
+        
+        /* Discount Badge */
+        .discount-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #ff0040 0%, #ff4d4d 100%);
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 30px;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 0, 64, 0.3);
+            z-index: 2;
+        }
+        
+        /* Action Button */
+        .action-btn {
+            background: linear-gradient(135deg, #f9c74f 0%, #f8961e 100%);
+            color: #0a0a0a;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(249, 199, 79, 0.3);
+        }
+        
+        /* Text Styles */
+        .gradient-text {
+            background: linear-gradient(135deg, #f9c74f 0%, #f8961e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-title {
+            font-weight: 700;
+        }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        /* Floating Elements */
+        .floating-shape {
+            position: absolute;
+            opacity: 0.05;
+            animation: float 10s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        /* Countdown Timer */
+        .countdown-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .countdown-item {
+            text-align: center;
+            min-width: 80px;
+        }
+        
+        .countdown-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f9c74f;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        
+        .countdown-label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Special Offer Banner */
+        .special-banner {
+            background: linear-gradient(135deg, rgba(255, 0, 64, 0.2) 0%, rgba(255, 77, 77, 0.1) 100%);
+            border: 1px solid rgba(255, 0, 64, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .special-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: scanLine 3s linear infinite;
+        }
+        
+        @keyframes scanLine {
+            0% { right: -100%; }
+            100% { right: 100%; }
+        }
+        
+        /* Product Image Container */
+        .product-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            height: 240px;
+            margin-bottom: 20px;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        /* Quick View Button */
+        .quick-view-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .product-card:hover .quick-view-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .quick-view-btn:hover {
+            background: rgba(249, 199, 79, 0.2);
+            border-color: #f9c74f;
+        }
+        
+        /* Cart Modal */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 400px;
+            height: 100%;
+            background: #1a1a2e;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .cart-modal.active {
+            left: 0;
+        }
+        
+        .cart-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .cart-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .cart-item-details {
+            flex: 1;
+        }
+        
+        .cart-item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-price {
+            color: #f9c74f;
+            font-weight: 600;
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quantity-btn {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quantity-btn:hover {
+            background: rgba(249, 199, 79, 0.2);
+        }
+        
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .cart-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(249, 199, 79, 0.3);
+            border-radius: 12px;
+            padding: 15px 25px;
+            color: white;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #f9c74f;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Error Message */
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #ff6b6b;
+            margin: 20px 0;
+        }
+        
+        /* Debug Info */
+        .debug-info {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+            text-align: right;
+            direction: ltr;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cart-modal {
+                width: 100%;
+                left: -100%;
+            }
+            
+            .countdown-container {
+                flex-wrap: wrap;
+            }
+            
+            .countdown-item {
+                min-width: 60px;
+            }
+            
+            .countdown-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="bg-gradient"></div>
+    <div class="grid-pattern"></div>
+    
+    <!-- Floating Shapes -->
+    <div class="floating-shape" style="top: 10%; right: 5%; font-size: 60px; color: #f9c74f;">◆</div>
+    <div class="floating-shape" style="top: 30%; left: 10%; font-size: 40px; animation-delay: 3s;">◈</div>
+    <div class="floating-shape" style="bottom: 20%; right: 8%; font-size: 50px; animation-delay: 5s; color: #f9c74f;">◉</div>
+    
+    <!-- Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="text-2xl font-bold section-title">
+                <span class="gradient-text">BLACK FRIDAY</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6">
+                <a href="#products" class="text-gray-400 hover:text-white transition">محصولات</a>
+                <button class="action-btn" id="cartBtn">
+                    <i class="fas fa-shopping-cart"></i>
+                    سبد خرید
+                    <span id="cartCount" class="bg-black text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center px-6 pt-20">
+        <div class="max-w-6xl w-full text-center">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 section-title fade-in">
+                بلک فرایدی <span class="gradient-text">۲۰۲۴</span>
+            </h1>
+            <p class="text-xl text-gray-400 mb-12 max-w-3xl mx-auto fade-in">
+                بزرگترین فروش سال با تخفیف‌های باورنکردنی! تا ۷۰٪ تخفیف روی محصولات منتخب. فرصت را از دست ندهید!
+            </p>
+            
+            <!-- Countdown Timer -->
+            <div class="countdown-container max-w-2xl mx-auto mb-12 fade-in">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="days">00</div>
+                    <div class="countdown-label">روز</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="hours">00</div>
+                    <div class="countdown-label">ساعت</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="minutes">00</div>
+                    <div class="countdown-label">دقیقه</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="seconds">00</div>
+                    <div class="countdown-label">ثانیه</div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center gap-4 fade-in">
+                <button class="action-btn" id="bombBtn">
+                    <i class="fas fa-bomb"></i>
+                    فعال‌سازی بمب تخفیف
+                </button>
+                <a href="#products" class="action-btn" style="background: transparent; border: 2px solid #f9c74f; color: #f9c74f;">
+                    مشاهده محصولات
+                    <i class="fas fa-arrow-down"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Special Offer Banner -->
+    <section class="max-w-6xl mx-auto px-6 mb-12">
+        <div class="special-banner fade-in">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-2xl font-bold mb-2">پیشنهاد ویژه امروز</h3>
+                    <p class="text-gray-400">با هر خرید بالای ۱ میلیون تومان، یک محصول هدیه دریافت کنید!</p>
+                </div>
+                <button class="action-btn">
+                    <i class="fas fa-gift"></i>
+                    دریافت هدیه
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Products Section -->
+    <section id="products" class="max-w-6xl mx-auto px-6 pb-20">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 section-title fade-in">
+            محصولات <span class="gradient-text">ویژه</span>
+        </h2>
+        
+        <!-- Product Loader -->
+        <div id="productLoader" class="text-center py-12 fade-in" style="display: none;">
+            <div class="loader"></div>
+            <p class="mt-4 text-gray-400">در حال بارگذاری محصولات...</p>
+        </div>
+        
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message fade-in" style="display: none;">
+            <i class="fas fa-exclamation-circle text-3xl mb-3"></i>
+            <p id="errorText">خطا در بارگذاری محصولات</p>
+        </div>
+        
+        <!-- Debug Info -->
+        <div id="debugInfo" class="debug-info fade-in" style="display: none;">
+            <h4>Debug Information:</h4>
+            <pre id="debugContent"></pre>
+        </div>
+        
+        <!-- Products Grid -->
+        <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Products will be loaded here -->
+        </div>
+    </section>
+    
+    <!-- Cart Modal -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h3 class="text-xl font-bold">سبد خرید</h3>
+            <button id="closeCartBtn" class="text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="cart-body" id="cartBody">
+            <!-- Cart items will be loaded here -->
+            <div class="text-center py-12 text-gray-400">
+                <i class="fas fa-shopping-cart text-4xl mb-4"></i>
+                <p>سبد خرید شما خالی است</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="flex justify-between mb-4">
+                <span>مجموع:</span>
+                <span class="text-xl font-bold text-f9c74f" id="cartTotal">۰ تومان</span>
+            </div>
+            <button class="action-btn w-full">
+                <i class="fas fa-credit-card"></i>
+                تسویه حساب
+            </button>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        // GSAP
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Cursor
+        const cursor = document.querySelector('.cursor');
+        const cursorFollower = document.querySelector('.cursor-follower');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        let followerX = 0, followerY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.5;
+            cursorY += (mouseY - cursorY) * 0.5;
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+            cursorFollower.style.left = followerX + 'px';
+            cursorFollower.style.top = followerY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+        
+        // Hover effects
+        const interactiveElements = document.querySelectorAll('a, button, .product-card');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+        
+        // WooCommerce API Configuration
+        const WOOCOMMERCE_API = {
+            url: 'https://noraste.com/wp-json/wc/v3/',
+            consumerKey: 'ck_591f63a441092f7a9bced1a9ed53b18813402643',
+            consumerSecret: 'cs_3e754361682b65228699f30e1423ecefd053694c'
+        };
+        
+        // Cart State
+        let cart = [];
+        let products = [];
+        
+        // DOM Elements
+        const productGrid = document.getElementById('productGrid');
+        const productLoader = document.getElementById('productLoader');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const debugInfo = document.getElementById('debugInfo');
+        const debugContent = document.getElementById('debugContent');
+        const cartModal = document.getElementById('cartModal');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const cartBody = document.getElementById('cartBody');
+        const cartCount = document.getElementById('cartCount');
+        const cartTotal = document.getElementById('cartTotal');
+        const notification = document.getElementById('notification');
+        
+        // Debug mode - set to true to see debug information
+        const DEBUG_MODE = false;
+        
+        // Load Products from WooCommerce
+        async function loadProducts() {
+            productLoader.style.display = 'block';
+            errorMessage.style.display = 'none';
+            debugInfo.style.display = DEBUG_MODE ? 'block' : 'none';
+            productGrid.innerHTML = '';
+            
+            try {
+                // Create the full URL with parameters
+                const url = new URL(`${WOOCOMMERCE_API.url}products`);
+                url.searchParams.append('per_page', '20');
+                url.searchParams.append('on_sale', 'true');
+                url.searchParams.append('status', 'publish');
+                
+                if (DEBUG_MODE) {
+                    console.log('Fetching from URL:', url.toString());
+                    debugContent.textContent = `Request URL: ${url.toString()}\n\n`;
+                }
+                
+                // Create headers with authentication
+                const headers = new Headers();
+                const authString = `${WOOCOMMERCE_API.consumerKey}:${WOOCOMMERCE_API.consumerSecret}`;
+                headers.append('Authorization', `Basic ${btoa(authString)}`);
+                headers.append('Content-Type', 'application/json');
+                
+                if (DEBUG_MODE) {
+                    debugContent.textContent += `Headers: ${JSON.stringify(Object.fromEntries(headers), null, 2)}\n\n`;
+                }
+                
+                // Make the request
+                const response = await fetch(url.toString(), {
+                    method: 'GET',
+                    headers: headers,
+                    mode: 'cors'
+                });
+                
+                if (DEBUG_MODE) {
+                    debugContent.textContent += `Response Status: ${response.status}\n`;
+                    debugContent.textContent += `Response Headers: ${JSON.stringify(Object.fromEntries(response.headers), null, 2)}\n\n`;
+                }
+                
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorData}`);
+                }
+                
+                // Parse the JSON response
+                const data = await response.json();
+                
+                if (DEBUG_MODE) {
+                    debugContent.textContent += `Response Data: ${JSON.stringify(data, null, 2)}\n\n`;
+                }
+                
+                if (!Array.isArray(data)) {
+                    throw new Error('Invalid response format: Expected array');
+                }
+                
+                if (data.length === 0) {
+                    // Try to get all products if no sale products found
+                    console.log('No sale products found, trying all products...');
+                    const allProductsUrl = new URL(`${WOOCOMMERCE_API.url}products`);
+                    allProductsUrl.searchParams.append('per_page', '20');
+                    allProductsUrl.searchParams.append('status', 'publish');
+                    
+                    const allResponse = await fetch(allProductsUrl.toString(), {
+                        method: 'GET',
+                        headers: headers,
+                        mode: 'cors'
+                    });
+                    
+                    if (allResponse.ok) {
+                        const allData = await allResponse.json();
+                        if (DEBUG_MODE) {
+                            debugContent.textContent += `All Products Response: ${JSON.stringify(allData, null, 2)}\n\n`;
+                        }
+                        products = allData.slice(0, 8); // Take first 8 products
+                    } else {
+                        throw new Error('No products found on the server');
+                    }
+                } else {
+                    products = data;
+                }
+                
+                if (products.length === 0) {
+                    throw new Error('No products available');
+                }
+                
+                displayProducts(products);
+                showNotification(`✅ ${products.length} محصول با موفقیت بارگذاری شد`);
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                errorText.textContent = `خطا: ${error.message}`;
+                errorMessage.style.display = 'block';
+                
+                if (DEBUG_MODE) {
+                    debugContent.textContent += `Error: ${error.message}\n`;
+                    debugContent.textContent += `Stack: ${error.stack}\n`;
+                }
+                
+                showNotification('❌ خطا در بارگذاری محصولات');
+            } finally {
+                productLoader.style.display = 'none';
+            }
+        }
+        
+        // Display Products
+        function displayProducts(productsToDisplay) {
+            productGrid.innerHTML = '';
+            
+            productsToDisplay.forEach((product, index) => {
+                const card = createProductCard(product);
+                card.style.animationDelay = `${index * 0.1}s`;
+                productGrid.appendChild(card);
+            });
+            
+            // Reveal animations
+            gsap.utils.toArray('.product-card').forEach((card, index) => {
+                gsap.to(card, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.6,
+                    delay: index * 0.1,
+                    ease: "back.out(1.7)",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                        once: true
+                    }
+                });
+            });
+        }
+        
+        // Create Product Card
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card fade-in';
+            
+            // Handle price display
+            const regularPrice = product.regular_price || product.price || '0';
+            const salePrice = product.sale_price || product.price || '0';
+            const discount = regularPrice && salePrice && regularPrice !== salePrice ? 
+                Math.round((1 - (parseInt(salePrice) / parseInt(regularPrice))) * 100) : 0;
+            
+            // Handle image
+            let imageUrl = 'https://picsum.photos/seed/placeholder/400/400';
+            if (product.images && product.images.length > 0) {
+                imageUrl = product.images[0].src || imageUrl;
+            } else if (product.image) {
+                imageUrl = product.image.src || imageUrl;
+            }
+            
+            card.innerHTML = `
+                <div class="product-image-container">
+                    <img src="${imageUrl}" alt="${product.name || 'محصول'}" class="product-image" onerror="this.src='https://picsum.photos/seed/fallback/400/400'">
+                    ${discount > 0 ? `<div class="discount-badge">-${discount}%</div>` : ''}
+                    <div class="quick-view-btn" onclick="quickView(${product.id})">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold mb-2">${product.name || 'محصول بدون نام'}</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        ${regularPrice && regularPrice !== salePrice ? 
+                            `<span class="text-gray-400 line-through text-sm">${formatPrice(regularPrice)}</span><br>` : ''}
+                        <span class="text-xl font-bold text-f9c74f">${formatPrice(salePrice)}</span>
+                    </div>
+                    <div class="flex gap-1">
+                        ${[1,2,3,4,5].map(i => 
+                            `<i class="fas fa-star text-yellow-400 text-sm"></i>`
+                        ).join('')}
+                    </div>
+                </div>
+                <button onclick="addToCart(${product.id})" class="action-btn w-full justify-center">
+                    <i class="fas fa-cart-plus"></i>
+                    افزودن به سبد
+                </button>
+            `;
+            
+            return card;
+        }
+        
+        // Format Price
+        function formatPrice(price) {
+            const numPrice = parseInt(price) || 0;
+            return new Intl.NumberFormat('fa-IR').format(numPrice) + ' تومان';
+        }
+        
+        // Add to Cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            
+            if (product) {
+                const existingItem = cart.find(item => item.id === productId);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        ...product,
+                        quantity: 1
+                    });
+                }
+                
+                updateCart();
+                showNotification('محصول به سبد خرید اضافه شد');
+            } else {
+                showNotification('محصول یافت نشد');
+            }
+        }
+        
+        // Update Cart
+        function updateCart() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            const totalPrice = cart.reduce((sum, item) => {
+                const price = item.sale_price || item.price || '0';
+                return sum + (parseInt(price) * item.quantity);
+            }, 0);
+            cartTotal.textContent = formatPrice(totalPrice);
+            
+            if (cart.length === 0) {
+                cartBody.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fas fa-shopping-cart text-4xl mb-4"></i>
+                        <p>سبد خرید شما خالی است</p>
+                    </div>
+                `;
+            } else {
+                cartBody.innerHTML = cart.map(item => {
+                    const imageUrl = item.images && item.images.length > 0 ? 
+                        item.images[0].src : 
+                        'https://picsum.photos/seed/cart/80/80';
+                    
+                    return `
+                        <div class="cart-item">
+                            <img src="${imageUrl}" alt="${item.name}" class="cart-item-image">
+                            <div class="cart-item-details">
+                                <div class="cart-item-title">${item.name}</div>
+                                <div class="cart-item-price">${formatPrice(item.sale_price || item.price)}</div>
+                                <div class="cart-item-quantity">
+                                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">
+                                        <i class="fas fa-minus text-xs"></i>
+                                    </button>
+                                    <span>${item.quantity}</span>
+                                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">
+                                        <i class="fas fa-plus text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="text-gray-400 hover:text-red-400" onclick="removeFromCart(${item.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+        
+        // Update Quantity
+        function updateQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    updateCart();
+                }
+            }
+        }
+        
+        // Remove from Cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+            showNotification('محصول از سبد خرید حذف شد');
+        }
+        
+        // Show Notification
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Quick View
+        function quickView(productId) {
+            showNotification('نمایش سریع محصول در حال توسعه است');
+        }
+        
+        // Cart Modal
+        document.getElementById('cartBtn').addEventListener('click', () => {
+            cartModal.classList.add('active');
+            cartOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        document.getElementById('closeCartBtn').addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+        
+        function closeCart() {
+            cartModal.classList.remove('active');
+            cartOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Bomb Discount Effect
+        document.getElementById('bombBtn').addEventListener('click', () => {
+            const explosion = document.createElement('div');
+            explosion.style.position = 'fixed';
+            explosion.style.top = '50%';
+            explosion.style.left = '50%';
+            explosion.style.width = '100px';
+            explosion.style.height = '100px';
+            explosion.style.borderRadius = '50%';
+            explosion.style.background = 'radial-gradient(circle, rgba(255, 199, 79, 0.8), transparent)';
+            explosion.style.transform = 'translate(-50%, -50%)';
+            explosion.style.zIndex = '9999';
+            explosion.style.pointerEvents = 'none';
+            document.body.appendChild(explosion);
+            
+            gsap.to(explosion, {
+                width: 500,
+                height: 500,
+                opacity: 0,
+                duration: 1,
+                ease: "power2.out",
+                onComplete: () => explosion.remove()
+            });
+            
+            gsap.to(document.body, {
+                x: 10,
+                duration: 0.05,
+                repeat: 10,
+                yoyo: true,
+                ease: "power2.inOut"
+            });
+            
+            document.querySelectorAll('.product-card').forEach(card => {
+                const priceElement = card.querySelector('.text-f9c74f');
+                if (priceElement) {
+                    const currentPriceText = priceElement.textContent;
+                    const currentPrice = parseInt(currentPriceText.replace(/[^0-9]/g, ''));
+                    const newPrice = Math.floor(currentPrice * 0.9);
+                    priceElement.textContent = formatPrice(newPrice);
+                    
+                    const extraBadge = document.createElement('span');
+                    extraBadge.className = 'text-green-400 text-sm';
+                    extraBadge.textContent = ' (-10% اضافی)';
+                    priceElement.appendChild(extraBadge);
+                }
+            });
+            
+            showNotification('💣 بمب تخفیف فعال شد! تمام محصولات ۱۰٪ ارزان‌تر!');
+        });
+        
+        // Countdown Timer
+        function startCountdown() {
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 10);
+            
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = endDate - now;
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            }
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+        
+        // Reveal animations
+        gsap.utils.toArray('.fade-in').forEach((element, index) => {
+            gsap.to(element, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                delay: index * 0.1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 85%",
+                    once: true
+                }
+            });
+        });
+        
+        // Parallax for floating shapes
+        gsap.utils.toArray('.floating-shape').forEach(shape => {
+            gsap.to(shape, {
+                y: -100,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: shape,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1
+                }
+            });
+        });
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            loadProducts();
+            startCountdown();
+            updateCart();
+        });
+    </script>
+</body>
+</html>

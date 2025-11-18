@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
@@ -22,361 +21,136 @@
     body {
       font-family: 'Inter', sans-serif;
       overflow-x: hidden;
-      background: #0f172a;
+      background: #0a0a0a;
       color: #ffffff;
     }
     
-    /* Smooth Scrolling */
     html {
       scroll-behavior: smooth;
     }
     
-    /* Custom Cursor */
+    /* Optimized Custom Cursor */
     .cursor {
       position: fixed;
-      width: 40px;
-      height: 40px;
-      border: 2px solid rgba(249, 199, 79, 0.6);
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(249, 199, 79, 0.8);
       border-radius: 50%;
       pointer-events: none;
       z-index: 9999;
-      transition: all 0.1s ease;
+      transition: all 0.15s ease-out;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 15px rgba(249, 199, 79, 0.5);
     }
     
-    .cursor-dot {
+    .cursor-follower {
       position: fixed;
       width: 8px;
       height: 8px;
-      background: linear-gradient(135deg, #f9c74f 0%, #1e3a8a 100%);
+      background: #f9c74f;
       border-radius: 50%;
       pointer-events: none;
       z-index: 9999;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 10px rgba(249, 199, 79, 0.8);
     }
     
     .cursor.hover {
-      width: 60px;
-      height: 60px;
-      border-color: #f9c74f;
+      width: 40px;
+      height: 40px;
       background: rgba(249, 199, 79, 0.1);
-      box-shadow: 0 0 20px rgba(249, 199, 79, 0.7);
     }
     
-    /* Gaming Background */
-    .gradient-bg {
+    /* Modern Background */
+    .bg-gradient {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(ellipse at top, #1e3a8a 0%, #0f172a 50%);
+      background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 50%);
       z-index: -2;
     }
     
-    /* Gaming Grid Pattern */
-    .gaming-grid {
+    .grid-pattern {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background-image: 
-        linear-gradient(rgba(249, 199, 79, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(30, 58, 138, 0.05) 1px, transparent 1px);
-      background-size: 30px 30px;
+        linear-gradient(rgba(249, 199, 79, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(249, 199, 79, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
       z-index: -1;
-      animation: gridPulse 10s linear infinite;
-    }
-    
-    @keyframes gridPulse {
-      0%, 100% { opacity: 0.05; }
-      50% { opacity: 0.15; }
-    }
-    
-    /* Animated Gaming Overlay */
-    .gaming-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(249, 199, 79, 0.03) 0%, rgba(30, 58, 138, 0.05) 50%, rgba(249, 199, 79, 0.03) 100%);
-      z-index: -1;
-      animation: gamingShift 15s ease infinite;
-    }
-    
-    @keyframes gamingShift {
-      0%, 100% { opacity: 0.05; transform: translateX(0) translateY(0); }
-      33% { opacity: 0.1; transform: translateX(-20px) translateY(20px); }
-      66% { opacity: 0.1; transform: translateX(20px) translateY(-20px); }
     }
     
     /* Navigation */
     nav {
-      backdrop-filter: blur(20px);
-      background: rgba(15, 23, 42, 0.8);
-      border-bottom: 1px solid rgba(249, 199, 79, 0.3);
+      backdrop-filter: blur(10px);
+      background: rgba(10, 10, 10, 0.8);
+      border-bottom: 1px solid rgba(249, 199, 79, 0.2);
       transition: all 0.3s ease;
-      box-shadow: 0 0 20px rgba(30, 58, 138, 0.3);
     }
     
     nav.scrolled {
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(30px);
-      box-shadow: 0 5px 20px rgba(249, 199, 79, 0.3);
+      background: rgba(10, 10, 10, 0.95);
+      box-shadow: 0 2px 20px rgba(249, 199, 79, 0.1);
     }
     
-    /* Hero Section */
-    .hero-gradient {
-      background: radial-gradient(ellipse at center, rgba(30, 58, 138, 0.2) 0%, transparent 70%);
-    }
-    
-    /* Text Animations */
-    .text-reveal {
-      opacity: 0;
-      transform: translateY(50px);
-    }
-    
-    .split-text span {
-      display: inline-block;
-      opacity: 0;
-      transform: translateY(100px);
-    }
-    
-    /* Gaming Card Styles */
-    .feature-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(249, 199, 79, 0.3);
-      backdrop-filter: blur(10px);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      transform-style: preserve-3d;
-      perspective: 1000px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .feature-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(249, 199, 79, 0.1) 0%, rgba(30, 58, 138, 0.1) 100%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: -1;
-    }
-    
-    .feature-card:hover {
-      transform: translateY(-10px) rotateX(5deg);
-      background: rgba(249, 199, 79, 0.05);
-      border-color: rgba(249, 199, 79, 0.6);
-      box-shadow: 0 20px 40px rgba(249, 199, 79, 0.3);
-    }
-    
-    .feature-card:hover::before {
-      opacity: 1;
-    }
-    
-    /* Gaming Button Styles */
+    /* Modern Buttons */
     .btn-primary {
-      background: linear-gradient(135deg, #1e3a8a 0%, #f9c74f 100%);
-      color: #ffffff;
+      background: linear-gradient(135deg, #f9c74f 0%, #f8961e 100%);
+      color: #0a0a0a;
       font-weight: 600;
-      padding: 14px 32px;
-      border-radius: 100px;
+      padding: 12px 28px;
+      border-radius: 8px;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 0 15px rgba(249, 199, 79, 0.5);
-    }
-    
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s ease;
-    }
-    
-    .btn-primary:hover::before {
-      left: 100%;
     }
     
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(249, 199, 79, 0.5);
+      box-shadow: 0 10px 30px rgba(249, 199, 79, 0.3);
     }
     
     .btn-secondary {
       background: transparent;
       color: #ffffff;
       font-weight: 600;
-      padding: 14px 32px;
-      border-radius: 100px;
+      padding: 12px 28px;
+      border-radius: 8px;
       border: 2px solid rgba(249, 199, 79, 0.5);
       transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .btn-secondary::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 100%;
-      background: linear-gradient(135deg, #1e3a8a 0%, #f9c74f 100%);
-      transition: width 0.3s ease;
-      z-index: -1;
-    }
-    
-    .btn-secondary:hover::before {
-      width: 100%;
     }
     
     .btn-secondary:hover {
-      color: #ffffff;
+      background: rgba(249, 199, 79, 0.1);
+      border-color: #f9c74f;
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(249, 199, 79, 0.4);
     }
     
-    /* Dropdown Menu Styles */
-    .dropdown-menu {
-      position: relative;
-      display: inline-block;
-    }
-    
-    .dropdown-content {
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-top: 10px;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(249, 199, 79, 0.3);
+    /* Modern Cards */
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
-      padding: 12px;
-      min-width: 200px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateX(-50%) translateY(-10px);
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 1000;
-    }
-    
-    .dropdown-content.show {
-      opacity: 1;
-      visibility: visible;
-      transform: translateX(-50%) translateY(0);
-    }
-    
-    .dropdown-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      color: #ffffff;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .dropdown-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(249, 199, 79, 0.2), transparent);
-      transition: left 0.5s ease;
-    }
-    
-    .dropdown-item:hover::before {
-      left: 100%;
-    }
-    
-    .dropdown-item:hover {
-      background: rgba(249, 199, 79, 0.1);
-      transform: translateX(5px);
-    }
-    
-    .dropdown-item i {
-      font-size: 18px;
-      color: #f9c74f;
-      width: 20px;
-      text-align: center;
-    }
-    
-    .dropdown-arrow {
-      display: inline-block;
-      margin-left: 8px;
-      transition: transform 0.3s ease;
-    }
-    
-    .dropdown-arrow.rotate {
-      transform: rotate(180deg);
-    }
-    
-    /* Gaming Floating Elements */
-    .floating-element {
-      position: absolute;
-      opacity: 0.2;
-      animation: float 6s ease-in-out infinite;
-      filter: drop-shadow(0 0 10px rgba(249, 199, 79, 0.5));
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(10deg); }
-    }
-    
-    /* Section Divider */
-    .section-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(249, 199, 79, 0.5) 50%, transparent 100%);
-      margin: 100px 0;
-    }
-    
-    /* Skill Pills */
-    .skill-pill {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(249, 199, 79, 0.3);
-      padding: 8px 20px;
-      border-radius: 100px;
-      font-size: 14px;
+      padding: 24px;
       transition: all 0.3s ease;
-      display: inline-block;
     }
     
-    .skill-pill:hover {
-      background: rgba(249, 199, 79, 0.1);
-      border-color: rgba(249, 199, 79, 0.6);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(249, 199, 79, 0.2);
+    .card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(249, 199, 79, 0.3);
+      transform: translateY(-4px);
     }
     
-    /* Project Card */
+    /* Enhanced Project Cards */
     .project-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(249, 199, 79, 0.3);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 20px;
       overflow: hidden;
-      transition: all 0.4s ease;
-      transform-style: preserve-3d;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       position: relative;
     }
     
@@ -387,25 +161,30 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(135deg, rgba(30, 58, 138, 0.1) 0%, rgba(249, 199, 79, 0.1) 100%);
+      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
       opacity: 0;
       transition: opacity 0.3s ease;
       z-index: -1;
     }
     
     .project-card:hover {
-      transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 30px 60px rgba(249, 199, 79, 0.3);
+      transform: translateY(-12px) scale(1.03);
+      border-color: rgba(249, 199, 79, 0.4);
+      box-shadow: 0 25px 50px rgba(249, 199, 79, 0.15);
     }
     
     .project-card:hover::before {
       opacity: 1;
     }
     
+    .project-card:hover .project-overlay {
+      opacity: 1;
+    }
+    
     .project-image {
       position: relative;
       overflow: hidden;
-      height: 250px;
+      height: 260px;
     }
     
     .project-image img {
@@ -416,7 +195,7 @@
     }
     
     .project-card:hover .project-image img {
-      transform: scale(1.1);
+      transform: scale(1.08);
     }
     
     .project-overlay {
@@ -425,81 +204,102 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(to bottom, transparent 0%, rgba(15, 23, 42, 0.9) 100%);
+      background: linear-gradient(to bottom, transparent 0%, rgba(10, 10, 10, 0.8) 100%);
       opacity: 0;
       transition: opacity 0.3s ease;
-    }
-    
-    .project-card:hover .project-overlay {
-      opacity: 1;
-    }
-    
-    /* Tool Icon */
-    .tool-icon {
-      width: 80px;
-      height: 80px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(249, 199, 79, 0.3);
-      border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+    }
+    
+    .project-overlay-content {
+      color: white;
+      text-align: center;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    
+    .project-card:hover .project-overlay-content {
+      transform: translateY(0);
+    }
+    
+    .view-project-btn {
+      background: rgba(249, 199, 79, 0.9);
+      color: #0a0a0a;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .view-project-btn:hover {
+      background: #f9c74f;
+      transform: scale(1.05);
+    }
+    
+    /* Tool Icons */
+    .tool-icon {
+      width: 70px;
+      height: 70px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
       transition: all 0.3s ease;
     }
     
     .tool-icon:hover {
       background: rgba(249, 199, 79, 0.1);
-      border-color: rgba(249, 199, 79, 0.6);
-      transform: translateY(-5px) rotate(5deg);
-      box-shadow: 0 10px 20px rgba(249, 199, 79, 0.3);
+      border-color: rgba(249, 199, 79, 0.3);
+      transform: translateY(-4px);
     }
     
-    /* Contact Card */
-    .contact-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(249, 199, 79, 0.3);
+    /* Skill Tags */
+    .skill-tag {
+      background: rgba(249, 199, 79, 0.1);
+      color: #f9c74f;
+      padding: 6px 16px;
       border-radius: 20px;
-      padding: 40px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-block;
+      transition: all 0.2s ease;
     }
     
-    .contact-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(249, 199, 79, 0.1) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
+    .skill-tag:hover {
+      background: rgba(249, 199, 79, 0.2);
+      transform: translateY(-1px);
     }
     
-    .contact-card:hover::before {
-      opacity: 1;
+    /* Text Styles */
+    .gradient-text {
+      background: linear-gradient(135deg, #f9c74f 0%, #f8961e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
-    .contact-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(249, 199, 79, 0.6);
-      box-shadow: 0 15px 30px rgba(249, 199, 79, 0.2);
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
     }
     
-    /* Loading Animation */
+    /* Animations */
     .fade-in {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(20px);
     }
     
     /* Social Links */
     .social-link {
-      width: 50px;
-      height: 50px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(249, 199, 79, 0.3);
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -509,9 +309,96 @@
     
     .social-link:hover {
       background: rgba(249, 199, 79, 0.1);
-      border-color: rgba(249, 199, 79, 0.6);
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(249, 199, 79, 0.3);
+      border-color: rgba(249, 199, 79, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    /* Enhanced Stats Section */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      padding: 4rem 2rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stats-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg at 50% 50%, 
+        transparent 0deg, 
+        rgba(249, 199, 79, 0.1) 60deg, 
+        transparent 120deg,
+        rgba(249, 199, 79, 0.05) 180deg,
+        transparent 240deg,
+        rgba(249, 199, 79, 0.1) 300deg,
+        transparent 360deg);
+      animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(249, 199, 79, 0.3);
+      box-shadow: 0 15px 30px rgba(249, 199, 79, 0.1);
+    }
+    
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, rgba(249, 199, 79, 0.2) 0%, rgba(249, 199, 79, 0.05) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #f9c74f;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover .stat-icon {
+      transform: scale(1.1) rotate(5deg);
+      background: linear-gradient(135deg, rgba(249, 199, 79, 0.3) 0%, rgba(249, 199, 79, 0.1) 100%);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #f9c74f;
+      margin-bottom: 0.5rem;
+      font-family: 'Orbitron', sans-serif;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     /* Scroll Indicator */
@@ -520,39 +407,47 @@
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      width: 30px;
-      height: 50px;
-      border: 2px solid rgba(249, 199, 79, 0.5);
-      border-radius: 20px;
+      width: 24px;
+      height: 40px;
+      border: 2px solid rgba(249, 199, 79, 0.4);
+      border-radius: 12px;
       display: flex;
       justify-content: center;
-      padding-top: 10px;
+      padding-top: 8px;
       z-index: 10;
     }
     
     .scroll-indicator::before {
       content: '';
-      width: 4px;
-      height: 10px;
+      width: 3px;
+      height: 8px;
       background: #f9c74f;
       border-radius: 2px;
       animation: scroll 2s infinite;
-      box-shadow: 0 0 10px rgba(249, 199, 79, 0.8);
     }
     
     @keyframes scroll {
       0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(20px); opacity: 0; }
+      100% { transform: translateY(16px); opacity: 0; }
     }
     
-    /* Number Counter */
-    .counter {
-      font-size: 48px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #1e3a8a 0%, #f9c74f 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    /* Floating Elements */
+    .floating-shape {
+      position: absolute;
+      opacity: 0.1;
+      animation: float 8s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    /* Section Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(249, 199, 79, 0.3) 50%, transparent 100%);
+      margin: 80px 0;
     }
     
     /* Responsive */
@@ -565,297 +460,196 @@
         font-size: 32px !important;
       }
       
-      .dropdown-content {
-        left: 0;
-        transform: translateX(0);
-        margin-top: 8px;
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 2rem 1rem;
       }
       
-      .dropdown-content.show {
-        transform: translateX(0) translateY(0);
+      .stat-card {
+        padding: 1.5rem;
+      }
+      
+      .stat-number {
+        font-size: 2rem;
       }
     }
-
-    /* ========== استایل‌های جدید کهکشان دنبال‌کننده موس ========== */
-    .galaxy-container {
-      width: 120px;
-      height: 120px;
+    
+    /* Permanent Image Hover Effect */
+    .about-image-container {
       position: relative;
       overflow: hidden;
-      border-radius: 50%;
-      box-shadow: 
-        0 0 20px rgba(30, 58, 138, 0.4),
-        0 0 40px rgba(30, 58, 138, 0.2),
-        inset 0 0 20px rgba(30, 58, 138, 0.3);
-      background: radial-gradient(circle at center, 
-        rgba(30, 58, 138, 0.9) 0%, 
-        rgba(15, 23, 42, 0.95) 40%, 
-        rgba(15, 23, 42, 1) 100%);
+      border-radius: 16px;
+      transition: all 0.3s ease;
     }
-
-    .galaxy {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      border-radius: 50%;
-      overflow: hidden;
-      animation: galaxyRotate 60s linear infinite;
-    }
-
-    .galaxy-core {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      background: radial-gradient(circle, 
-        rgba(249, 199, 79, 1) 0%, 
-        rgba(249, 199, 79, 0.8) 30%, 
-        rgba(30, 58, 138, 0.6) 60%, 
-        rgba(30, 58, 138, 0.3) 100%);
-      border-radius: 50%;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      box-shadow: 
-        0 0 10px rgba(249, 199, 79, 0.8),
-        0 0 20px rgba(249, 199, 79, 0.6);
-    }
-
-    .stars {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-    }
-
-    .star {
-      position: absolute;
-      background-color: white;
-      border-radius: 50%;
-      animation: twinkle 3s infinite;
-    }
-
-    .star1 { width: 3px; height: 3px; top: 20%; left: 30%; animation-delay: 0.2s; }
-    .star2 { width: 2px; height: 2px; top: 40%; left: 70%; animation-delay: 0.5s; }
-    .star3 { width: 4px; height: 4px; top: 60%; left: 20%; animation-delay: 0.8s; }
-    .star4 { width: 2px; height: 2px; top: 30%; left: 80%; animation-delay: 1.1s; }
-    .star5 { width: 3px; height: 3px; top: 70%; left: 60%; animation-delay: 1.4s; }
-    .star6 { width: 2px; height: 2px; top: 80%; left: 40%; animation-delay: 1.7s; }
-    .star7 { width: 3px; height: 3px; top: 25%; left: 50%; animation-delay: 2.0s; }
-    .star8 { width: 2px; height: 2px; top: 50%; left: 25%; animation-delay: 2.3s; }
-    .star9 { width: 3px; height: 3px; top: 65%; left: 75%; animation-delay: 2.6s; }
-    .star10{ width: 2px; height: 2px; top: 35%; left: 15%; animation-delay: 2.9s; }
-    .star11{ width: 3px; height: 3px; top: 75%; left: 30%; animation-delay: 3.2s; }
-    .star12{ width: 2px; height: 2px; top: 45%; left: 85%; animation-delay: 3.5s; }
-
-    .galaxy-dust {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at center, 
-        transparent 0%, 
-        rgba(30, 58, 138, 0.1) 40%, 
-        rgba(30, 58, 138, 0.3) 70%, 
-        rgba(15, 23, 42, 0.5) 100%);
-      border-radius: 50%;
-      opacity: 0.7;
-      animation: galaxyPulse 8s ease-in-out infinite;
-    }
-
-    @keyframes galaxyRotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes twinkle {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 1; }
-    }
-
-    @keyframes galaxyPulse {
-      0%, 100% { opacity: 0.7; transform: scale(1); }
-      50% { opacity: 0.9; transform: scale(1.05); }
-    }
-    /* ======================================================= */
-
-    /* Gaming Font for Headers */
-    .gaming-font {
-      font-family: 'Orbitron', sans-serif;
-    }
-
-    /* Gaming Glow Effect */
-    .gaming-glow {
-      text-shadow: 0 0 10px rgba(249, 199, 79, 0.7);
-    }
-
-    /* Gaming Border Animation */
-    .gaming-border {
-      position: relative;
-      border: 2px solid transparent;
-      background: linear-gradient(#0f172a, #0f172a) padding-box,
-                  linear-gradient(135deg, #1e3a8a, #f9c74f) border-box;
-    }
-
-    /* Gaming Hover Effect for Buttons */
-    .gaming-btn-hover {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .gaming-btn-hover::after {
+    
+    .about-image-container::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #1e3a8a, #f9c74f);
+      right: 0;
+      bottom: 0;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      background: linear-gradient(45deg, #f9c74f, #f8961e, #f9c74f) border-box;
+      opacity: 1;
+      animation: borderRotate 3s linear infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .about-image-container:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 30px rgba(249, 199, 79, 0.2);
+    }
+    
+    @keyframes borderRotate {
+      0% {
+        background: linear-gradient(45deg, #f9c74f, #f8961e, #f9c74f) border-box;
+      }
+      50% {
+        background: linear-gradient(225deg, #f9c74f, #f8961e, #f9c74f) border-box;
+      }
+      100% {
+        background: linear-gradient(45deg, #f9c74f, #f8961e, #f9c74f) border-box;
+      }
+    }
+    
+    /* Optimized Galaxy Effect */
+    .galaxy {
+      width: 100px;
+      height: 100px;
+      position: relative;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249, 199, 79, 0.3) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .galaxy::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      background: #f9c74f;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 20px rgba(249, 199, 79, 0.5);
+    }
+    
+    /* Modern Loading Animation */
+    .loader {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(249, 199, 79, 0.2);
+      border-top-color: #f9c74f;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Modern Hover Effects */
+    .hover-lift {
+      transition: transform 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+      transform: translateY(-4px);
+    }
+    
+    /* Text Reveal Animation */
+    .reveal-text {
       opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: -1;
+      transform: translateY(30px);
     }
-
-    .gaming-btn-hover:hover::after {
-      opacity: 0.2;
-    }
-
-    /* Gaming Text Gradient */
-    .gaming-text-gradient {
-      background: linear-gradient(135deg, #1e3a8a 0%, #f9c74f 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* Gaming Card Border Animation */
-    .gaming-card-border {
+    
+    /* Modern Border Animation */
+    .border-animate {
       position: relative;
       overflow: hidden;
     }
-
-    .gaming-card-border::before {
+    
+    .border-animate::before {
       content: '';
       position: absolute;
       top: 0;
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(249, 199, 79, 0.3), transparent);
+      background: linear-gradient(90deg, transparent, rgba(249, 199, 79, 0.2), transparent);
       transition: left 0.5s ease;
-      z-index: -1;
     }
-
-    .gaming-card-border:hover::before {
+    
+    .border-animate:hover::before {
       left: 100%;
     }
-
-    /* Dynamic Hover Gradient Effect */
-    .dynamic-hover {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .dynamic-hover-gradient {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-        rgba(249, 199, 79, 0.8) 0%, 
-        rgba(30, 58, 138, 0.6) 40%, 
-        rgba(15, 23, 42, 0.4) 100%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
-
-    .dynamic-hover:hover .dynamic-hover-gradient {
-      opacity: 1;
-    }
-
   </style>
 </head>
 <body>
-  <!-- Background Elements -->
-  <div class="gradient-bg"></div>
-  <div class="gaming-grid"></div>
-  <div class="gaming-overlay"></div>
+  <!-- Background -->
+  <div class="bg-gradient"></div>
+  <div class="grid-pattern"></div>
   
-  <!-- Custom Cursor -->
+  <!-- Optimized Cursor -->
   <div class="cursor"></div>
-  <div class="cursor-dot"></div>
+  <div class="cursor-follower"></div>
   
-  <!-- Gaming Floating Elements -->
-  <div class="floating-element" style="top: 10%; left: 10%; font-size: 60px; color: #f9c74f;">◈</div>
-  <div class="floating-element" style="top: 20%; right: 15%; font-size: 40px; animation-delay: 2s; color: #1e3a8a;">◉</div>
-  <div class="floating-element" style="bottom: 30%; left: 5%; font-size: 50px; animation-delay: 4s; color: #f9c74f;">◆</div>
+  <!-- Floating Shapes -->
+  <div class="floating-shape" style="top: 10%; left: 10%; font-size: 40px; color: #f9c74f;">◆</div>
+  <div class="floating-shape" style="top: 20%; right: 15%; font-size: 30px; animation-delay: 2s;">◈</div>
+  <div class="floating-shape" style="bottom: 30%; left: 5%; font-size: 35px; animation-delay: 4s; color: #f9c74f;">◉</div>
   
   <!-- Navigation -->
   <nav id="navbar" class="fixed top-0 w-full z-50 px-6 py-4">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      <div class="text-2xl font-bold gaming-font">
-        <span class="gaming-text-gradient">Sina.</span>
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="text-2xl font-bold section-title">
+        <span class="gradient-text">Sina.</span>
       </div>
-      <div class="hidden md:flex items-center gap-8">
-        <a href="#about" class="text-gray-300 hover:text-yellow-400 transition">About</a>
-        <a href="#work" class="text-gray-300 hover:text-yellow-400 transition">Work</a>
-        <a href="#tools" class="text-gray-300 hover:text-yellow-400 transition">Tools</a>
-        <a href="#contact" class="text-gray-300 hover:text-yellow-400 transition">Contact</a>
-        <button class="btn-primary dynamic-hover">
-          <span class="dynamic-hover-gradient"></span>
-          Book a Call
-        </button>
+      <div class="hidden md:flex items-center gap-6">
+        <a href="#about" class="text-gray-400 hover:text-white transition">About</a>
+        <a href="#work" class="text-gray-400 hover:text-white transition">Work</a>
+        <a href="#tools" class="text-gray-400 hover:text-white transition">Tools</a>
+        <a href="#contact" class="text-gray-400 hover:text-white transition">Contact</a>
+        <button class="btn-primary">Book a Call</button>
       </div>
       <button class="md:hidden text-white" id="mobile-menu">
-        <i class="fas fa-bars text-2xl"></i>
+        <i class="fas fa-bars text-xl"></i>
       </button>
     </div>
   </nav>
   
   <!-- Hero Section -->
-  <section class="min-h-screen flex items-center justify-center px-6 pt-20 relative hero-gradient">
-    <div class="max-w-5xl w-full text-center relative z-10">
-      <div class="mb-8 fade-in">
-        <p class="text-yellow-400 font-medium text-lg gaming-font">Hi, my name is</p>
+  <section class="min-h-screen flex items-center justify-center px-6 pt-20">
+    <div class="max-w-4xl w-full text-center">
+      <div class="mb-6 reveal-text">
+        <p class="text-yellow-400 font-medium">Hi, my name is</p>
       </div>
-      <h1 class="hero-title text-6xl md:text-8xl font-bold mb-6 split-text gaming-font gaming-glow">
+      <h1 class="hero-title text-5xl md:text-7xl font-bold mb-6 section-title reveal-text">
         Sina Tavakoli
       </h1>
-      <h2 class="hero-subtitle text-4xl md:text-6xl font-light mb-8 text-gray-300 split-text">
-        I create <span class="gaming-text-gradient">3D experiences</span>
+      <h2 class="hero-subtitle text-3xl md:text-5xl font-light mb-8 text-gray-400 reveal-text">
+        I create <span class="gradient-text">3D experiences</span>
       </h2>
-      <p class="text-xl text-gray-400 mb-12 max-w-3xl mx-auto fade-in">
-        Product designer crafting immersive digital experiences that blend creativity with cutting-edge 3D technology
+      <p class="text-lg text-gray-500 mb-10 max-w-2xl mx-auto reveal-text">
+        Product designer crafting immersive digital experiences with cutting-edge 3D technology
       </p>
-      <div class="flex justify-center gap-6 fade-in">
-        <button class="btn-primary dynamic-hover">
-          <span class="dynamic-hover-gradient"></span>
-          Book a Call
-        </button>
+      <div class="flex justify-center gap-4 reveal-text">
+        <button class="btn-primary">Book a Call</button>
         
-        <!-- Dropdown Menu Button -->
-        <div class="dropdown-menu">
-          <button class="btn-secondary dynamic-hover" id="viewWorkBtn">
-            <span class="dynamic-hover-gradient"></span>
-            View My Work
-            <span class="dropdown-arrow" id="dropdownArrow">▼</span>
-          </button>
-          <div class="dropdown-content" id="dropdownContent">
-            <a href="#work" class="dropdown-item" id="viewOnline">
-              <i class="fas fa-eye"></i>
-              <span>View Online</span>
-            </a>
-            <a href="#" class="dropdown-item" id="printResume">
-              <i class="fas fa-print"></i>
-              <span>Print Resume</span>
-            </a>
-            <a href="#" class="dropdown-item" id="downloadResume">
-              <i class="fas fa-download"></i>
-              <span>Download Resume</span>
-            </a>
-          </div>
-        </div>
+        <!-- Direct Link Button -->
+        <a href="http://192.168.1.197/project-sina/social.html" class="btn-secondary" target="_blank">
+          View My Work
+        </a>
       </div>
     </div>
     
@@ -864,68 +658,42 @@
   </section>
   
   <!-- About Section -->
-  <section id="about" class="py-24 px-6">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        <div class="fade-in">
-          <div class="relative">
-            <img src="https://picsum.photos/seed/sina3d/600/700.jpg" 
-                 class="rounded-3xl w-full shadow-2xl" 
-                 style="border: 2px solid rgba(249, 199, 79, 0.5);" />
-            
-            <!-- ========== کد جدید کهکشان دنبال‌کننده موس ========== -->
-            <div class="absolute -bottom-6 -right-6 w-32 h-32 flex items-center justify-center">
-              <div class="galaxy-container">
-                <div class="galaxy">
-                  <div class="galaxy-core"></div>
-                  <div class="stars">
-                    <div class="star star1"></div>
-                    <div class="star star2"></div>
-                    <div class="star star3"></div>
-                    <div class="star star4"></div>
-                    <div class="star star5"></div>
-                    <div class="star star6"></div>
-                    <div class="star star7"></div>
-                    <div class="star star8"></div>
-                    <div class="star star9"></div>
-                    <div class="star star10"></div>
-                    <div class="star star11"></div>
-                    <div class="star star12"></div>
-                  </div>
-                  <div class="galaxy-dust"></div>
-                </div>
-              </div>
-            </div>
-            <!-- ================================================== -->
+  <section id="about" class="py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="reveal-text">
+          <div class="about-image-container">
+            <img src="https://picsum.photos/seed/sina3d/500/600.jpg" 
+                 class="rounded-2xl w-full" />
+            <div class="absolute -bottom-4 -right-4 galaxy"></div>
           </div>
         </div>
         
-        <div class="space-y-8">
-          <div class="fade-in">
-            <h2 class="text-4xl font-bold mb-6 gaming-font gaming-glow">About Me</h2>
-            <p class="text-lg text-gray-300 leading-relaxed mb-6">
-              Hello! I'm Sina, a passionate product designer with over 3 years of experience creating beautiful, functional digital products with immersive <span class="text-yellow-400">3D elements</span>.
+        <div class="space-y-6">
+          <div class="reveal-text">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 section-title">About Me</h2>
+            <p class="text-gray-400 leading-relaxed mb-4">
+              Hello! I'm Sina, a passionate product designer with over 3 years of experience creating beautiful digital products with immersive <span class="text-yellow-400">3D elements</span>.
             </p>
-            <p class="text-lg text-gray-300 leading-relaxed">
+            <p class="text-gray-400 leading-relaxed">
               My passion lies in solving complex problems through design and creating experiences that users love. I specialize in UI/UX design, 3D visualization, and creative direction.
             </p>
           </div>
           
-          <div class="fade-in">
-            <h3 class="text-xl font-semibold mb-4 gaming-font">Skills & Expertise</h3>
-            <div class="flex flex-wrap gap-3">
-              <span class="skill-pill">Product Design</span>
-              <span class="skill-pill">UI/UX Design</span>
-              <span class="skill-pill">3D Design</span>
-              <span class="skill-pill">Prototyping</span>
-              <span class="skill-pill">Creative Direction</span>
-              <span class="skill-pill">Motion Design</span>
+          <div class="reveal-text">
+            <h3 class="text-lg font-semibold mb-3">Skills & Expertise</h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="skill-tag">Product Design</span>
+              <span class="skill-tag">UI/UX Design</span>
+              <span class="skill-tag">3D Design</span>
+              <span class="skill-tag">Prototyping</span>
+              <span class="skill-tag">Motion Design</span>
             </div>
           </div>
           
-          <div class="fade-in">
+          <div class="reveal-text">
             <a href="#" class="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 transition">
-              View Resume <i class="fas fa-arrow-right"></i>
+              View Resume <i class="fas fa-arrow-right text-sm"></i>
             </a>
           </div>
         </div>
@@ -933,84 +701,113 @@
     </div>
   </section>
   
-  <div class="section-divider"></div>
+  <div class="divider"></div>
   
-  <!-- Stats Section -->
-  <section class="py-16 px-6">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-        <div class="fade-in">
-          <div class="counter" data-target="50">0</div>
-          <p class="text-gray-400 mt-2">Projects Completed</p>
+  <!-- Enhanced Stats Section -->
+  <section class="py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="stats-container">
+        <div class="stat-card reveal-text">
+          <div class="stat-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <div class="stat-number" data-target="50">0</div>
+          <div class="stat-label">Projects</div>
         </div>
-        <div class="fade-in">
-          <div class="counter" data-target="30">0</div>
-          <p class="text-gray-400 mt-2">Happy Clients</p>
+        
+        <div class="stat-card reveal-text">
+          <div class="stat-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-number" data-target="30">0</div>
+          <div class="stat-label">Clients</div>
         </div>
-        <div class="fade-in">
-          <div class="counter" data-target="3">0</div>
-          <p class="text-gray-400 mt-2">Years Experience</p>
+        
+        <div class="stat-card reveal-text">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="stat-number" data-target="3">0</div>
+          <div class="stat-label">Years</div>
         </div>
-        <div class="fade-in">
-          <div class="counter" data-target="15">0</div>
-          <p class="text-gray-400 mt-2">Awards Won</p>
+        
+        <div class="stat-card reveal-text">
+          <div class="stat-icon">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <div class="stat-number" data-target="15">0</div>
+          <div class="stat-label">Awards</div>
         </div>
       </div>
     </div>
   </section>
   
+  <div class="divider"></div>
+  
   <!-- Work Section -->
-  <section id="work" class="py-24 px-6">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold mb-6 fade-in gaming-font gaming-glow">Selected Work</h2>
-        <p class="text-xl text-gray-400 max-w-2xl mx-auto fade-in">
+  <section id="work" class="py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 section-title reveal-text">Selected Work</h2>
+        <p class="text-gray-500 max-w-xl mx-auto reveal-text">
           Explore my latest 3D design projects and creative experiments
         </p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="project-card fade-in gaming-card-border">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="project-card reveal-text">
           <div class="project-image">
             <img src="https://picsum.photos/seed/project1/400/300.jpg" alt="Project 1" />
-            <div class="project-overlay"></div>
+            <div class="project-overlay">
+              <div class="project-overlay-content">
+                <button class="view-project-btn">View Project</button>
+              </div>
+            </div>
           </div>
-          <div class="p-8">
-            <h3 class="text-2xl font-bold mb-3 gaming-font">SaaS Platform 3D</h3>
-            <p class="text-gray-400 mb-6">Complete redesign with immersive 3D dashboard and interactions</p>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">SaaS Platform 3D</h3>
+            <p class="text-gray-500 text-sm mb-4">Complete redesign with immersive 3D dashboard</p>
             <div class="flex gap-2">
-              <span class="skill-pill">UI Design</span>
-              <span class="skill-pill">3D</span>
+              <span class="skill-tag text-xs">UI Design</span>
+              <span class="skill-tag text-xs">3D</span>
             </div>
           </div>
         </div>
         
-        <div class="project-card fade-in gaming-card-border">
+        <div class="project-card reveal-text">
           <div class="project-image">
             <img src="https://picsum.photos/seed/project2/400/300.jpg" alt="Project 2" />
-            <div class="project-overlay"></div>
+            <div class="project-overlay">
+              <div class="project-overlay-content">
+                <button class="view-project-btn">View Project</button>
+              </div>
+            </div>
           </div>
-          <div class="p-8">
-            <h3 class="text-2xl font-bold mb-3 gaming-font">Mobile Experience</h3>
-            <p class="text-gray-400 mb-6">iOS app with cutting-edge 3D animations and micro-interactions</p>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">Mobile Experience</h3>
+            <p class="text-gray-500 text-sm mb-4">iOS app with 3D animations</p>
             <div class="flex gap-2">
-              <span class="skill-pill">Mobile</span>
-              <span class="skill-pill">Motion</span>
+              <span class="skill-tag text-xs">Mobile</span>
+              <span class="skill-tag text-xs">Motion</span>
             </div>
           </div>
         </div>
         
-        <div class="project-card fade-in gaming-card-border">
+        <div class="project-card reveal-text">
           <div class="project-image">
             <img src="https://picsum.photos/seed/project3/400/300.jpg" alt="Project 3" />
-            <div class="project-overlay"></div>
+            <div class="project-overlay">
+              <div class="project-overlay-content">
+                <button class="view-project-btn">View Project</button>
+              </div>
+            </div>
           </div>
-          <div class="p-8">
-            <h3 class="text-2xl font-bold mb-3 gaming-font">Design System</h3>
-            <p class="text-gray-400 mb-6">3D component library with interactive elements</p>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">Design System</h3>
+            <p class="text-gray-500 text-sm mb-4">3D component library</p>
             <div class="flex gap-2">
-              <span class="skill-pill">Design System</span>
-              <span class="skill-pill">3D</span>
+              <span class="skill-tag text-xs">Design System</span>
+              <span class="skill-tag text-xs">3D</span>
             </div>
           </div>
         </div>
@@ -1018,106 +815,106 @@
     </div>
   </section>
   
-  <div class="section-divider"></div>
+  <div class="divider"></div>
   
   <!-- Tools Section -->
-  <section id="tools" class="py-24 px-6">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold mb-6 fade-in gaming-font gaming-glow">My Toolbox</h2>
-        <p class="text-xl text-gray-400 max-w-2xl mx-auto fade-in">
+  <section id="tools" class="py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 section-title reveal-text">My Toolbox</h2>
+        <p class="text-gray-500 max-w-xl mx-auto reveal-text">
           The tools I use to bring 3D experiences to life
         </p>
       </div>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div class="text-center fade-in">
-          <div class="tool-icon mx-auto mb-4">🎨</div>
-          <h3 class="font-semibold mb-2 gaming-font">Figma</h3>
-          <p class="text-gray-400 text-sm">3D Plugins</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="text-center reveal-text">
+          <div class="tool-icon mx-auto mb-3">🎨</div>
+          <h3 class="font-semibold">Figma</h3>
+          <p class="text-gray-500 text-sm">3D Plugins</p>
         </div>
-        <div class="text-center fade-in">
-          <div class="tool-icon mx-auto mb-4">🧊</div>
-          <h3 class="font-semibold mb-2 gaming-font">Spline</h3>
-          <p class="text-gray-400 text-sm">3D Design</p>
+        <div class="text-center reveal-text">
+          <div class="tool-icon mx-auto mb-3">🧊</div>
+          <h3 class="font-semibold">Spline</h3>
+          <p class="text-gray-500 text-sm">3D Design</p>
         </div>
-        <div class="text-center fade-in">
-          <div class="tool-icon mx-auto mb-4">🟦</div>
-          <h3 class="font-semibold mb-2 gaming-font">Blender</h3>
-          <p class="text-gray-400 text-sm">3D Modeling</p>
+        <div class="text-center reveal-text">
+          <div class="tool-icon mx-auto mb-3">🟦</div>
+          <h3 class="font-semibold">Blender</h3>
+          <p class="text-gray-500 text-sm">3D Modeling</p>
         </div>
-        <div class="text-center fade-in">
-          <div class="tool-icon mx-auto mb-4">🎬</div>
-          <h3 class="font-semibold mb-2 gaming-font">After Effects</h3>
-          <p class="text-gray-400 text-sm">3D Motion</p>
+        <div class="text-center reveal-text">
+          <div class="tool-icon mx-auto mb-3">🎬</div>
+          <h3 class="font-semibold">After Effects</h3>
+          <p class="text-gray-500 text-sm">3D Motion</p>
         </div>
-        <div class="text-center fade-in">
-          <div class="tool-icon mx-auto mb-4">🌐</div>
-          <h3 class="font-semibold mb-2 gaming-font">Three.js</h3>
-          <p class="text-gray-400 text-sm">Web 3D</p>
+        <div class="text-center reveal-text">
+          <div class="tool-icon mx-auto mb-3">🌐</div>
+          <h3 class="font-semibold">Three.js</h3>
+          <p class="text-gray-500 text-sm">Web 3D</p>
         </div>
-        <div class="text-center fade-in">
-          <div class="tool-icon mx-auto mb-4">📱</div>
-          <h3 class="font-semibold mb-2 gaming-font">Principle</h3>
-          <p class="text-gray-400 text-sm">Prototyping</p>
+        <div class="text-center reveal-text">
+          <div class="tool-icon mx-auto mb-3">📱</div>
+          <h3 class="font-semibold">Principle</h3>
+          <p class="text-gray-500 text-sm">Prototyping</p>
         </div>
-        <div class="text-center fade-in">
-          <div class="tool-icon mx-auto mb-4">✨</div>
-          <h3 class="font-semibold mb-2 gaming-font">Cinema 4D</h3>
-          <p class="text-gray-400 text-sm">3D Animation</p>
+        <div class="text-center reveal-text">
+          <div class="tool-icon mx-auto mb-3">✨</div>
+          <h3 class="font-semibold">Cinema 4D</h3>
+          <p class="text-gray-500 text-sm">3D Animation</p>
         </div>
-        <div class="text-center fade-in">
-          <div class="tool-icon mx-auto mb-4">🎭</div>
-          <h3 class="font-semibold mb-2 gaming-font">React Three</h3>
-          <p class="text-gray-400 text-sm">3D Components</p>
+        <div class="text-center reveal-text">
+          <div class="tool-icon mx-auto mb-3">🎭</div>
+          <h3 class="font-semibold">React Three</h3>
+          <p class="text-gray-500 text-sm">3D Components</p>
         </div>
       </div>
     </div>
   </section>
   
   <!-- Contact Section -->
-  <section id="contact" class="py-24 px-6">
-    <div class="max-w-5xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl md:text-5xl font-bold mb-6 fade-in gaming-font gaming-glow">Let's Work Together</h2>
-        <p class="text-xl text-gray-400 max-w-2xl mx-auto fade-in">
+  <section id="contact" class="py-20 px-6">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 section-title reveal-text">Let's Work Together</h2>
+        <p class="text-gray-500 max-w-xl mx-auto reveal-text">
           Ready to create something amazing? Let's discuss your project
         </p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-        <div class="contact-card fade-in gaming-card-border">
-          <div class="text-5xl mb-4">📧</div>
-          <h3 class="text-2xl font-bold mb-3 gaming-font">Email</h3>
-          <p class="text-gray-400 mb-4">Let's discuss your 3D project</p>
-          <a href="mailto:sina@example.com" class="text-yellow-400 hover:text-yellow-300 transition">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div class="card reveal-text">
+          <div class="text-4xl mb-4">📧</div>
+          <h3 class="text-xl font-bold mb-2">Email</h3>
+          <p class="text-gray-500 text-sm mb-3">Let's discuss your 3D project</p>
+          <a href="mailto:sina@example.com" class="text-yellow-400 hover:text-yellow-300 transition text-sm">
             sina@example.com
           </a>
         </div>
         
-        <div class="contact-card fade-in gaming-card-border">
-          <div class="text-5xl mb-4">💬</div>
-          <h3 class="text-2xl font-bold mb-3 gaming-font">WhatsApp</h3>
-          <p class="text-gray-400 mb-4">Quick chat about your ideas</p>
-          <a href="#" class="text-yellow-400 hover:text-yellow-300 transition">
+        <div class="card reveal-text">
+          <div class="text-4xl mb-4">💬</div>
+          <h3 class="text-xl font-bold mb-2">WhatsApp</h3>
+          <p class="text-gray-500 text-sm mb-3">Quick chat about your ideas</p>
+          <a href="#" class="text-yellow-400 hover:text-yellow-300 transition text-sm">
             +98 912 345 6789
           </a>
         </div>
       </div>
       
-      <div class="text-center fade-in">
-        <div class="flex justify-center gap-4">
+      <div class="text-center reveal-text">
+        <div class="flex justify-center gap-3">
           <a href="#" class="social-link">
-            <i class="fab fa-linkedin text-xl"></i>
+            <i class="fab fa-linkedin"></i>
           </a>
           <a href="#" class="social-link">
-            <i class="fab fa-dribbble text-xl"></i>
+            <i class="fab fa-dribbble"></i>
           </a>
           <a href="#" class="social-link">
-            <i class="fab fa-behance text-xl"></i>
+            <i class="fab fa-behance"></i>
           </a>
           <a href="#" class="social-link">
-            <i class="fab fa-github text-xl"></i>
+            <i class="fab fa-github"></i>
           </a>
         </div>
       </div>
@@ -1125,235 +922,80 @@
   </section>
   
   <!-- Footer -->
-  <footer class="py-12 px-6 border-t border-yellow-900">
-    <div class="max-w-7xl mx-auto text-center">
-      <p class="text-gray-400">© 2023 Sina Tavakoli. All rights reserved.</p>
+  <footer class="py-8 px-6 border-t border-gray-800">
+    <div class="max-w-6xl mx-auto text-center">
+      <p class="text-gray-600">© 2023 Sina Tavakoli. All rights reserved.</p>
     </div>
   </footer>
   
   <script>
-    // Initialize GSAP
-    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+    // Optimized GSAP
+    gsap.registerPlugin(ScrollTrigger);
     
-    // Custom Cursor
+    // Optimized Cursor
     const cursor = document.querySelector('.cursor');
-    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorFollower = document.querySelector('.cursor-follower');
+    let mouseX = 0, mouseY = 0;
+    let cursorX = 0, cursorY = 0;
+    let followerX = 0, followerY = 0;
     
     document.addEventListener('mousemove', (e) => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
-      cursorDot.style.left = e.clientX + 'px';
-      cursorDot.style.top = e.clientY + 'px';
+      mouseX = e.clientX;
+      mouseY = e.clientY;
     });
     
-    // Add hover effect to interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, .project-card, .tool-icon, .contact-card, .social-link, .dropdown-item');
+    function animateCursor() {
+      cursorX += (mouseX - cursorX) * 0.5;
+      cursorY += (mouseY - cursorY) * 0.5;
+      cursor.style.left = cursorX + 'px';
+      cursor.style.top = cursorY + 'px';
+      
+      followerX += (mouseX - followerX) * 0.1;
+      followerY += (mouseY - followerY) * 0.1;
+      cursorFollower.style.left = followerX + 'px';
+      cursorFollower.style.top = followerY + 'px';
+      
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+    
+    // Hover effects
+    const interactiveElements = document.querySelectorAll('a, button, .project-card, .tool-icon, .card, .social-link');
     interactiveElements.forEach(el => {
       el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
     });
     
-    // Dynamic hover gradient effect for buttons
-    document.querySelectorAll('.dynamic-hover').forEach(button => {
-      button.addEventListener('mousemove', (e) => {
-        const rect = button.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        
-        const gradient = button.querySelector('.dynamic-hover-gradient');
-        if (gradient) {
-          gradient.style.setProperty('--mouse-x', `${x}%`);
-          gradient.style.setProperty('--mouse-y', `${y}%`);
-        }
-      });
-    });
-    
-    // Dropdown Menu Functionality
-    const viewWorkBtn = document.getElementById('viewWorkBtn');
-    const dropdownContent = document.getElementById('dropdownContent');
-    const dropdownArrow = document.getElementById('dropdownArrow');
-    let isDropdownOpen = false;
-    
-    viewWorkBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      isDropdownOpen = !isDropdownOpen;
-      
-      if (isDropdownOpen) {
-        dropdownContent.classList.add('show');
-        dropdownArrow.classList.add('rotate');
-        
-        // Animate dropdown items
-        const dropdownItems = dropdownContent.querySelectorAll('.dropdown-item');
-        gsap.fromTo(dropdownItems, 
-          { opacity: 0, y: -10, x: 20 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            x: 0,
-            duration: 0.3,
-            stagger: 0.1,
-            ease: "power2.out"
-          }
-        );
-      } else {
-        dropdownContent.classList.remove('show');
-        dropdownArrow.classList.remove('rotate');
-      }
-    });
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.dropdown-menu') && isDropdownOpen) {
-        isDropdownOpen = false;
-        dropdownContent.classList.remove('show');
-        dropdownArrow.classList.remove('rotate');
-      }
-    });
-    
-    // Handle dropdown item clicks
-    document.getElementById('viewOnline').addEventListener('click', (e) => {
-      e.preventDefault();
-      // Smooth scroll to work section
-      document.getElementById('work').scrollIntoView({ behavior: 'smooth' });
-      isDropdownOpen = false;
-      dropdownContent.classList.remove('show');
-      dropdownArrow.classList.remove('rotate');
-    });
-    
-    document.getElementById('printResume').addEventListener('click', (e) => {
-      e.preventDefault();
-      // Create print-friendly version
-      window.print();
-      isDropdownOpen = false;
-      dropdownContent.classList.remove('show');
-      dropdownArrow.classList.remove('rotate');
-    });
-    
-    document.getElementById('downloadResume').addEventListener('click', (e) => {
-      e.preventDefault();
-      // Create a sample resume file download
-      const resumeContent = `
-Sina Tavakoli - 3D Product Designer
-=====================================
-
-Contact:
-Email: sina@example.com
-Phone: +98 912 345 6789
-
-Experience:
-- 3+ years in Product Design
-- Specialized in 3D UI/UX Design
-- Expert in modern design tools
-
-Skills:
-- Product Design
-- UI/UX Design
-- 3D Design & Visualization
-- Prototyping
-- Motion Design
-- Creative Direction
-
-Tools:
-- Figma
-- Spline
-- Blender
-- After Effects
-- Three.js
-- Principle
-- Cinema 4D
-- React Three Fiber
-
-Portfolio:
-Available at: https://sinatavakoli.com
-      `;
-      
-      const blob = new Blob([resumeContent], { type: 'text/plain' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Sina_Tavakoli_Resume.txt';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      
-      isDropdownOpen = false;
-      dropdownContent.classList.remove('show');
-      dropdownArrow.classList.remove('rotate');
-    });
-    
-    // Navbar scroll effect
+    // Navbar scroll
     window.addEventListener('scroll', () => {
       const navbar = document.getElementById('navbar');
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
     });
     
-    // Split text animation
-    function splitText(element) {
-      const text = element.innerText;
-      element.innerHTML = '';
-      text.split('').forEach(char => {
-        const span = document.createElement('span');
-        span.innerText = char === ' ' ? '\u00A0' : char;
-        element.appendChild(span);
-      });
-      return element.querySelectorAll('span');
-    }
-    
-    // Animate hero title
-    const heroTitle = document.querySelector('.hero-title');
-    const heroTitleChars = splitText(heroTitle);
-    
-    gsap.to(heroTitleChars, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      stagger: 0.05,
-      ease: "power3.out",
-      delay: 0.5
-    });
-    
-    // Animate hero subtitle
-    const heroSubtitle = document.querySelector('.hero-subtitle');
-    const heroSubtitleChars = splitText(heroSubtitle);
-    
-    gsap.to(heroSubtitleChars, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      stagger: 0.03,
-      ease: "power3.out",
-      delay: 1
-    });
-    
-    // Fade in animations
-    gsap.utils.toArray('.fade-in').forEach(element => {
+    // Reveal animations
+    gsap.utils.toArray('.reveal-text').forEach(element => {
       gsap.to(element, {
         opacity: 1,
         y: 0,
-        duration: 1,
-        ease: "power3.out",
+        duration: 0.8,
+        ease: "power2.out",
         scrollTrigger: {
           trigger: element,
           start: "top 85%",
-          end: "bottom 15%",
-          toggleActions: "play none none reverse"
+          once: true
         }
       });
     });
     
     // Counter animation
-    const counters = document.querySelectorAll('.counter');
+    const counters = document.querySelectorAll('.stat-number');
     counters.forEach(counter => {
       const target = parseInt(counter.getAttribute('data-target'));
       
       ScrollTrigger.create({
         trigger: counter,
         start: "top 80%",
+        once: true,
         onEnter: () => {
           gsap.to(counter, {
             innerText: target,
@@ -1368,54 +1010,18 @@ Available at: https://sinatavakoli.com
       });
     });
     
-    // Smooth scroll for navigation links
+    // Smooth scroll
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
-        if (!this.closest('.dropdown-menu')) {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
-          if (target) {
-            target.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
     });
     
-    // Project cards hover effect
-    const projectCards = document.querySelectorAll('.project-card');
-    projectCards.forEach(card => {
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const rotateX = (y - centerY) / 20;
-        const rotateY = (centerX - x) / 20;
-        
-        gsap.to(card, {
-          rotationX: rotateX,
-          rotationY: rotateY,
-          transformPerspective: 1000,
-          duration: 0.3
-        });
-      });
-      
-      card.addEventListener('mouseleave', () => {
-        gsap.to(card, {
-          rotationX: 0,
-          rotationY: 0,
-          duration: 0.3
-        });
-      });
-    });
-    
-    // Hide scroll indicator on scroll
+    // Hide scroll indicator
     window.addEventListener('scroll', () => {
       const scrollIndicator = document.querySelector('.scroll-indicator');
       if (window.scrollY > 100) {
@@ -1425,70 +1031,68 @@ Available at: https://sinatavakoli.com
       }
     });
     
-    // Mobile menu toggle
-    const mobileMenu = document.getElementById('mobile-menu');
-    let isMenuOpen = false;
-    
-    mobileMenu.addEventListener('click', () => {
-      isMenuOpen = !isMenuOpen;
-      // Add mobile menu functionality here if needed
+    // Mobile menu
+    document.getElementById('mobile-menu')?.addEventListener('click', () => {
+      // Add mobile menu functionality
     });
     
-    // Parallax effect for floating elements
-    gsap.utils.toArray('.floating-element').forEach(element => {
-      gsap.to(element, {
-        y: -100,
+    // Parallax for floating shapes
+    gsap.utils.toArray('.floating-shape').forEach(shape => {
+      gsap.to(shape, {
+        y: -50,
         ease: "none",
         scrollTrigger: {
-          trigger: element,
+          trigger: shape,
           start: "top bottom",
           end: "bottom top",
-          scrub: true
+          scrub: 1
         }
       });
     });
-
-    // ========== اسکریپت جدید کهکشان دنبال‌کننده موس ==========
-    document.addEventListener('DOMContentLoaded', () => {
-      const galaxy = document.querySelector('.galaxy');
-      const galaxyContainer = document.querySelector('.galaxy-container');
-
-      // اگر کهکشان در صفحه وجود نداشت، کاری انجام نده
-      if (!galaxy || !galaxyContainer) return;
-
-      document.addEventListener('mousemove', (event) => {
-        // 1. پیدا کردن مرکز دقیق کهکشان
-        const galaxyRect = galaxyContainer.getBoundingClientRect();
-        const galaxyCenterX = galaxyRect.left + galaxyRect.width / 2;
-        const galaxyCenterY = galaxyRect.top + galaxyRect.height / 2;
-
-        // 2. پیدا کردن موقعیت فعلی ماوس
-        const mouseX = event.clientX;
-        const mouseY = event.clientY;
-
-        // 3. محاسبه زاویه و فاصله بین ماوس و مرکز کهکشان
-        const angle = Math.atan2(mouseY - galaxyCenterY, mouseX - galaxyCenterY);
-        const distance = Math.sqrt(
-          Math.pow(mouseX - galaxyCenterX, 2) + Math.pow(mouseY - galaxyCenterY, 2)
-        );
-
-        // 4. تعیین حداکثر فاصله‌ای که کهکشان می‌تواند حرکت کند
-        // (شعاع کهکشان)
-        const maxDistance = 15;
-
-        // 5. محاسبه موقعیت جدید کهکشان
-        // Math.min تضمین می‌کند که کهکشان از حد خود خارج نشود
-        const moveDistance = Math.min(distance, maxDistance);
-        const galaxyX = Math.cos(angle) * moveDistance;
-        const galaxyY = Math.sin(angle) * moveDistance;
-
-        // 6. اعمال حرکت به کهکشان
-        // برای اینکه چرخش کهکشان حذف نشود، آن را در ترنسفورم جدید ادغام می‌کنیم
-        galaxy.style.transform = `translate(calc(-50% + ${galaxyX}px), calc(-50% + ${galaxyY}px)) rotate(${angle * 180 / Math.PI}deg)`;
-      });
-    });
-    // ========================================================
-
+    
+    // Enhanced project cards entrance animation
+    gsap.fromTo('.project-card', 
+      { 
+        opacity: 0, 
+        y: 50,
+        scale: 0.9
+      },
+      { 
+        opacity: 1, 
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: '.project-card',
+          start: 'top 80%',
+          once: true
+        }
+      }
+    );
+    
+    // Stats cards entrance animation
+    gsap.fromTo('.stat-card', 
+      { 
+        opacity: 0, 
+        y: 30,
+        scale: 0.9
+      },
+      { 
+        opacity: 1, 
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        stagger: 0.15,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: '.stat-card',
+          start: 'top 80%',
+          once: true
+        }
+      }
+    );
   </script>
 </body>
 </html>
