@@ -425,6 +425,93 @@
       text-align: center;
     }
     
+    /* Language Selection Styles */
+    .language-selection {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    
+    .language-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      width: 180px;
+    }
+    
+    .language-btn:hover {
+      background: rgba(249, 199, 79, 0.1);
+      border-color: rgba(249, 199, 79, 0.3);
+      transform: translateY(-5px);
+    }
+    
+    .flag-container {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .flag-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .flag-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #f9c74f;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .pdf-viewer-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .back-to-lang-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .back-to-lang-btn:hover {
+      background: rgba(249, 199, 79, 0.2);
+      border-color: #f9c74f;
+    }
+    
     /* Counter Animation */
     .counter {
       display: inline-block;
@@ -461,6 +548,16 @@
       .pdf-control-btn {
         width: 35px;
         height: 35px;
+      }
+      
+      .language-btn {
+        width: 140px;
+        padding: 16px;
+      }
+      
+      .flag-container {
+        width: 60px;
+        height: 60px;
       }
     }
   </style>
@@ -727,11 +824,15 @@
       <div class="modal-header">
         <h2 class="text-xl font-bold section-title">Resume PDF</h2>
         <div class="flex gap-3">
-          <button class="pdf-btn" id="printPdfBtn">
+          <button class="back-to-lang-btn" id="backToLangBtn" style="display: none;">
+            <i class="fas fa-language"></i>
+            Change Language
+          </button>
+          <button class="pdf-btn" id="printPdfBtn" style="display: none;">
             <i class="fas fa-print"></i>
             Print
           </button>
-          <button class="pdf-btn" id="downloadPdfBtn">
+          <button class="pdf-btn" id="downloadPdfBtn" style="display: none;">
             <i class="fas fa-download"></i>
             Download PDF
           </button>
@@ -741,35 +842,60 @@
         </div>
       </div>
       <div class="modal-body">
-        <div class="pdf-loading" id="pdfLoading">
-          <div class="pdf-spinner"></div>
-          <p>Loading PDF...</p>
+        <!-- Language Selection Screen -->
+        <div class="language-selection" id="languageSelection">
+          <h2 class="text-xl font-bold section-title mb-8">Select Resume Language</h2>
+          <div class="flex gap-6 justify-center">
+            <button class="language-btn" id="faResumeBtn">
+              <div class="flag-container">
+                <div class="flag-loading" id="faFlagLoading"></div>
+                <img id="faFlag" class="flag-image" alt="Iran Flag" style="display: none;">
+              </div>
+              <span class="mt-4 text-lg font-semibold">فارسی</span>
+              <span class="text-sm text-gray-400">Persian</span>
+            </button>
+            <button class="language-btn" id="enResumeBtn">
+              <div class="flag-container">
+                <div class="flag-loading" id="enFlagLoading"></div>
+                <img id="enFlag" class="flag-image" alt="US Flag" style="display: none;">
+              </div>
+              <span class="mt-4 text-lg font-semibold">English</span>
+            </button>
+          </div>
         </div>
-        <iframe 
-          id="pdfViewer"
-          class="pdf-viewer" 
-          src=""
-          style="display: none;"
-        ></iframe>
         
-        <!-- PDF Controls -->
-        <div class="pdf-controls" id="pdfControls" style="display: none;">
-          <button class="pdf-control-btn" id="prevPage">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <span class="pdf-page-info" id="pageInfo">Page 1</span>
-          <button class="pdf-control-btn" id="nextPage">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-          <button class="pdf-control-btn" id="zoomOut">
-            <i class="fas fa-search-minus"></i>
-          </button>
-          <button class="pdf-control-btn" id="zoomIn">
-            <i class="fas fa-search-plus"></i>
-          </button>
-          <button class="pdf-control-btn" id="fullscreen">
-            <i class="fas fa-expand"></i>
-          </button>
+        <!-- PDF Viewer Container -->
+        <div class="pdf-viewer-container" id="pdfViewerContainer" style="display: none;">
+          <div class="pdf-loading" id="pdfLoading">
+            <div class="pdf-spinner"></div>
+            <p>Loading PDF...</p>
+          </div>
+          <iframe 
+            id="pdfViewer"
+            class="pdf-viewer" 
+            src=""
+            style="display: none;"
+          ></iframe>
+          
+          <!-- PDF Controls -->
+          <div class="pdf-controls" id="pdfControls" style="display: none;">
+            <button class="pdf-control-btn" id="prevPage">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="pdf-page-info" id="pageInfo">Page 1</span>
+            <button class="pdf-control-btn" id="nextPage">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="pdf-control-btn" id="zoomOut">
+              <i class="fas fa-search-minus"></i>
+            </button>
+            <button class="pdf-control-btn" id="zoomIn">
+              <i class="fas fa-search-plus"></i>
+            </button>
+            <button class="pdf-control-btn" id="fullscreen">
+              <i class="fas fa-expand"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -820,15 +946,74 @@
     const closeModalBtn = document.getElementById('closeModalBtn');
     const downloadPdfBtn = document.getElementById('downloadPdfBtn');
     const printPdfBtn = document.getElementById('printPdfBtn');
+    const backToLangBtn = document.getElementById('backToLangBtn');
     const pdfViewer = document.getElementById('pdfViewer');
     const pdfLoading = document.getElementById('pdfLoading');
     const pdfControls = document.getElementById('pdfControls');
     
-    // PDF URL - Replace with your actual PDF URL
-    const PDF_URL = 'http://192.168.1.197/project-sina/CnA.pdf';
+    // Language selection elements
+    const languageSelection = document.getElementById('languageSelection');
+    const pdfViewerContainer = document.getElementById('pdfViewerContainer');
+    const faResumeBtn = document.getElementById('faResumeBtn');
+    const enResumeBtn = document.getElementById('enResumeBtn');
     
-    // Zoom level for PDF
+    // Flag elements
+    const faFlag = document.getElementById('faFlag');
+    const enFlag = document.getElementById('enFlag');
+    const faFlagLoading = document.getElementById('faFlagLoading');
+    const enFlagLoading = document.getElementById('enFlagLoading');
+    
+    // PDF URLs for different languages
+    const PDF_URLS = {
+      fa: 'http://sinadesigner.ir/CnA_fa.pdf', // Persian resume URL
+      en: 'http://sinadesigner.ir/CnA.pdf'     // English resume URL (existing)
+    };
+    
+    // Country codes for flags
+    const FLAG_COUNTRIES = {
+      fa: 'ir', // Iran for Persian
+      en: 'us'  // United States for English
+    };
+    
+    let currentLanguage = 'en'; // Default language
     let zoomLevel = 1;
+    let currentPage = 1;
+    
+    // Function to load flag from API
+    function loadFlag(languageCode) {
+      const countryCode = FLAG_COUNTRIES[languageCode];
+      const flagElement = languageCode === 'fa' ? faFlag : enFlag;
+      const loadingElement = languageCode === 'fa' ? faFlagLoading : enFlagLoading;
+      
+      // Show loading spinner
+      loadingElement.style.display = 'block';
+      flagElement.style.display = 'none';
+      
+      // Create image with API URL
+      const flagUrl = `https://flagcdn.com/w80/${countryCode}.png`;
+      
+      // Create new image to test loading
+      const testImg = new Image();
+      testImg.onload = function() {
+        flagElement.src = flagUrl;
+        flagElement.style.display = 'block';
+        loadingElement.style.display = 'none';
+      };
+      testImg.onerror = function() {
+        // Fallback to alternative flag API
+        const fallbackUrl = `https://flagicons.lipis.dev/flags/4x3/${countryCode}.svg`;
+        flagElement.src = fallbackUrl;
+        flagElement.style.display = 'block';
+        loadingElement.style.display = 'none';
+      };
+      testImg.src = flagUrl;
+    }
+    
+    // Load flags when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+      loadFlag('fa');
+      loadFlag('en');
+    });
     
     // Open modal when clicking preview buttons
     resumePreviewBtn.addEventListener('click', () => {
@@ -843,7 +1028,51 @@
       resumeModal.classList.add('active');
       document.body.style.overflow = 'hidden';
       
-      // Load PDF
+      // Reset to language selection screen
+      languageSelection.style.display = 'flex';
+      pdfViewerContainer.style.display = 'none';
+      backToLangBtn.style.display = 'none';
+      downloadPdfBtn.style.display = 'none';
+      printPdfBtn.style.display = 'none';
+      
+      // Ensure flags are loaded
+      loadFlag('fa');
+      loadFlag('en');
+    }
+    
+    // Language selection handlers
+    faResumeBtn.addEventListener('click', () => {
+      currentLanguage = 'fa';
+      showPdfViewer();
+    });
+    
+    enResumeBtn.addEventListener('click', () => {
+      currentLanguage = 'en';
+      showPdfViewer();
+    });
+    
+    // Back to language selection
+    backToLangBtn.addEventListener('click', () => {
+      languageSelection.style.display = 'flex';
+      pdfViewerContainer.style.display = 'none';
+      backToLangBtn.style.display = 'none';
+      downloadPdfBtn.style.display = 'none';
+      printPdfBtn.style.display = 'none';
+      
+      // Reset zoom level
+      zoomLevel = 1;
+      pdfViewer.style.transform = `scale(${zoomLevel})`;
+      
+      // Clear PDF source
+      pdfViewer.src = '';
+    });
+    
+    function showPdfViewer() {
+      languageSelection.style.display = 'none';
+      pdfViewerContainer.style.display = 'flex';
+      backToLangBtn.style.display = 'flex';
+      downloadPdfBtn.style.display = 'flex';
+      printPdfBtn.style.display = 'flex';
       loadPdf();
     }
     
@@ -853,8 +1082,8 @@
       pdfViewer.style.display = 'none';
       pdfControls.style.display = 'none';
       
-      // Create PDF URL with viewer parameters
-      const pdfUrl = `${PDF_URL}#toolbar=0&navpanes=0&scrollbar=0`;
+      // Create PDF URL with viewer parameters for the selected language
+      const pdfUrl = `${PDF_URLS[currentLanguage]}#toolbar=0&navpanes=0&scrollbar=0`;
       
       // Load PDF in iframe
       pdfViewer.src = pdfUrl;
@@ -891,6 +1120,13 @@
       zoomLevel = 1;
       pdfViewer.style.transform = `scale(${zoomLevel})`;
       
+      // Reset to language selection screen
+      languageSelection.style.display = 'flex';
+      pdfViewerContainer.style.display = 'none';
+      backToLangBtn.style.display = 'none';
+      downloadPdfBtn.style.display = 'none';
+      printPdfBtn.style.display = 'none';
+      
       // Clear PDF source
       setTimeout(() => {
         pdfViewer.src = '';
@@ -908,8 +1144,8 @@
     downloadPdfBtn.addEventListener('click', () => {
       // Create a temporary link to download PDF
       const link = document.createElement('a');
-      link.href = PDF_URL;
-      link.download = 'Sina_Tavakoli_Resume.pdf';
+      link.href = PDF_URLS[currentLanguage];
+      link.download = currentLanguage === 'fa' ? 'Sina_Tavakoli_Resume_FA.pdf' : 'Sina_Tavakoli_Resume_EN.pdf';
       link.target = '_blank';
       document.body.appendChild(link);
       link.click();
@@ -919,14 +1155,13 @@
     // Print PDF
     printPdfBtn.addEventListener('click', () => {
       // Open PDF in new window for printing
-      const printWindow = window.open(PDF_URL, '_blank');
+      const printWindow = window.open(PDF_URLS[currentLanguage], '_blank');
       printWindow.onload = function() {
         printWindow.print();
       };
     });
     
     // PDF Controls
-    let currentPage = 1;
     const prevPageBtn = document.getElementById('prevPage');
     const nextPageBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
@@ -986,14 +1221,20 @@
     document.addEventListener('keydown', (e) => {
       if (resumeModal.classList.contains('active')) {
         if (e.key === 'Escape') {
-          closePdfModal();
-        } else if (e.key === 'ArrowLeft') {
+          if (pdfViewerContainer.style.display === 'flex') {
+            // If PDF viewer is visible, go back to language selection
+            backToLangBtn.click();
+          } else {
+            // If language selection is visible, close modal
+            closePdfModal();
+          }
+        } else if (e.key === 'ArrowLeft' && pdfViewerContainer.style.display === 'flex') {
           prevPageBtn.click();
-        } else if (e.key === 'ArrowRight') {
+        } else if (e.key === 'ArrowRight' && pdfViewerContainer.style.display === 'flex') {
           nextPageBtn.click();
-        } else if (e.key === '+' || e.key === '=') {
+        } else if (e.key === '+' || e.key === '=' && pdfViewerContainer.style.display === 'flex') {
           zoomInBtn.click();
-        } else if (e.key === '-') {
+        } else if (e.key === '-' && pdfViewerContainer.style.display === 'flex') {
           zoomOutBtn.click();
         }
       }

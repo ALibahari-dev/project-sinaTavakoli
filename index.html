@@ -129,6 +129,25 @@
       transform: translateY(-2px);
     }
     
+    /* Load More Button */
+    .btn-load-more {
+      background: transparent;
+      color: #f9c74f;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: 2px solid #f9c74f;
+      transition: all 0.3s ease;
+      margin: 40px auto 0;
+      display: block;
+      width: fit-content;
+    }
+    
+    .btn-load-more:hover {
+      background: rgba(249, 199, 79, 0.1);
+      transform: translateY(-2px);
+    }
+    
     /* Modern Cards */
     .card {
       background: rgba(255, 255, 255, 0.02);
@@ -492,29 +511,13 @@
       bottom: 0;
       border-radius: 16px;
       border: 2px solid transparent;
-      background: linear-gradient(45deg, #f9c74f, #f8961e, #f9c74f) border-box;
+      
       opacity: 1;
       animation: borderRotate 3s linear infinite;
       z-index: 1;
       pointer-events: none;
     }
     
-    .about-image-container:hover {
-      transform: scale(1.02);
-      box-shadow: 0 10px 30px rgba(249, 199, 79, 0.2);
-    }
-    
-    @keyframes borderRotate {
-      0% {
-        background: linear-gradient(45deg, #f9c74f, #f8961e, #f9c74f) border-box;
-      }
-      50% {
-        background: linear-gradient(225deg, #f9c74f, #f8961e, #f9c74f) border-box;
-      }
-      100% {
-        background: linear-gradient(45deg, #f9c74f, #f8961e, #f9c74f) border-box;
-      }
-    }
     
     /* Optimized Galaxy Effect */
     .galaxy {
@@ -593,6 +596,11 @@
     .border-animate:hover::before {
       left: 100%;
     }
+    
+    /* Hidden projects initially */
+    .hidden-project {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -613,14 +621,17 @@
   <nav id="navbar" class="fixed top-0 w-full z-50 px-6 py-4">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <div class="text-2xl font-bold section-title">
-        <span class="gradient-text">Sina.</span>
+        <span class="gradient-text">Sina Tavakoli</span>
       </div>
       <div class="hidden md:flex items-center gap-6">
         <a href="#about" class="text-gray-400 hover:text-white transition">About</a>
         <a href="#work" class="text-gray-400 hover:text-white transition">Work</a>
         <a href="#tools" class="text-gray-400 hover:text-white transition">Tools</a>
         <a href="#contact" class="text-gray-400 hover:text-white transition">Contact</a>
-        <button class="btn-primary">Book a Call</button>
+      <a href="http://sinadesigner.ir/call.html" class="btn-primary">
+    Book a Call
+</a>
+
       </div>
       <button class="md:hidden text-white" id="mobile-menu">
         <i class="fas fa-bars text-xl"></i>
@@ -644,10 +655,12 @@
         Product designer crafting immersive digital experiences with cutting-edge 3D technology
       </p>
       <div class="flex justify-center gap-4 reveal-text">
-        <button class="btn-primary">Book a Call</button>
+             <a href="http://sinadesigner.ir/call.html" class="btn-primary">
+    Book a Call
+</a>
         
         <!-- Direct Link Button -->
-        <a href="http://192.168.1.197/project-sina/social.html" class="btn-secondary" target="_blank">
+        <a href="http://sinadesigner.ir/social.html" class="btn-secondary" target="_blank">
           View My Work
         </a>
       </div>
@@ -663,7 +676,9 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div class="reveal-text">
           <div class="about-image-container">
-            <img src="https://picsum.photos/seed/sina3d/500/600.jpg" 
+            <!-- Using a placeholder image URL instead of local path -->
+            <img src="img/about.jpg" 
+                 alt="Sina Tavakoli"
                  class="rounded-2xl w-full" />
             <div class="absolute -bottom-4 -right-4 galaxy"></div>
           </div>
@@ -711,7 +726,7 @@
           <div class="stat-icon">
             <i class="fas fa-rocket"></i>
           </div>
-          <div class="stat-number" data-target="50">0</div>
+          <div class="stat-number" data-target="67">0</div>
           <div class="stat-label">Projects</div>
         </div>
         
@@ -719,7 +734,7 @@
           <div class="stat-icon">
             <i class="fas fa-users"></i>
           </div>
-          <div class="stat-number" data-target="30">0</div>
+          <div class="stat-number" data-target="15">0</div>
           <div class="stat-label">Clients</div>
         </div>
         
@@ -727,7 +742,7 @@
           <div class="stat-icon">
             <i class="fas fa-calendar-alt"></i>
           </div>
-          <div class="stat-number" data-target="3">0</div>
+          <div class="stat-number" data-target="8">0</div>
           <div class="stat-label">Years</div>
         </div>
         
@@ -735,7 +750,7 @@
           <div class="stat-icon">
             <i class="fas fa-trophy"></i>
           </div>
-          <div class="stat-number" data-target="15">0</div>
+          <div class="stat-number" data-target="8">0</div>
           <div class="stat-label">Awards</div>
         </div>
       </div>
@@ -754,18 +769,19 @@
         </p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-container">
+        <!-- Project 1 -->
         <div class="project-card reveal-text">
           <div class="project-image">
-            <img src="https://picsum.photos/seed/project1/400/300.jpg" alt="Project 1" />
+            <img src="img/img1.webp" alt="Project 1" />
             <div class="project-overlay">
               <div class="project-overlay-content">
-                <button class="view-project-btn">View Project</button>
+                <a href="https://www.behance.net/gallery/193254671/Foogital-Case-Study" class="view-project-btn"> View Project </a>
               </div>
             </div>
           </div>
           <div class="p-6">
-            <h3 class="text-xl font-bold mb-2">SaaS Platform 3D</h3>
+            <h3 class="text-xl font-bold mb-2">Case study Foogital</h3>
             <p class="text-gray-500 text-sm mb-4">Complete redesign with immersive 3D dashboard</p>
             <div class="flex gap-2">
               <span class="skill-tag text-xs">UI Design</span>
@@ -774,17 +790,18 @@
           </div>
         </div>
         
+        <!-- Project 2 -->
         <div class="project-card reveal-text">
           <div class="project-image">
-            <img src="https://picsum.photos/seed/project2/400/300.jpg" alt="Project 2" />
+            <img src="img/img2.webp" alt="Project 2" />
             <div class="project-overlay">
               <div class="project-overlay-content">
-                <button class="view-project-btn">View Project</button>
+          <a href="https://www.behance.net/gallery/223300969/Winetap-game-Mobile-UIUX-Design" class="view-project-btn"> View Project </a>
               </div>
             </div>
           </div>
           <div class="p-6">
-            <h3 class="text-xl font-bold mb-2">Mobile Experience</h3>
+            <h3 class="text-xl font-bold mb-2">Winetap Game Design</h3>
             <p class="text-gray-500 text-sm mb-4">iOS app with 3D animations</p>
             <div class="flex gap-2">
               <span class="skill-tag text-xs">Mobile</span>
@@ -793,17 +810,18 @@
           </div>
         </div>
         
+        <!-- Project 3 -->
         <div class="project-card reveal-text">
           <div class="project-image">
-            <img src="https://picsum.photos/seed/project3/400/300.jpg" alt="Project 3" />
+            <img src="img/img3.webp" alt="Project 3" />
             <div class="project-overlay">
               <div class="project-overlay-content">
-                <button class="view-project-btn">View Project</button>
+   <a href="https://www.behance.net/gallery/184274417/UniSwap-AsterFI-Project-Collaboration" class="view-project-btn"> View Project </a>
               </div>
             </div>
           </div>
           <div class="p-6">
-            <h3 class="text-xl font-bold mb-2">Design System</h3>
+            <h3 class="text-xl font-bold mb-2">UniSwap AsterFI Project</h3>
             <p class="text-gray-500 text-sm mb-4">3D component library</p>
             <div class="flex gap-2">
               <span class="skill-tag text-xs">Design System</span>
@@ -811,7 +829,72 @@
             </div>
           </div>
         </div>
+        
+        <!-- Project 4 - Initially Hidden -->
+        <div class="project-card reveal-text hidden-project">
+          <div class="project-image">
+            <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Project 4" />
+            <div class="project-overlay">
+              <div class="project-overlay-content">
+                <a href="#" class="view-project-btn"> View Project </a>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">3D Product Visualization</h3>
+            <p class="text-gray-500 text-sm mb-4">Interactive 3D product showcase with realistic materials</p>
+            <div class="flex gap-2">
+              <span class="skill-tag text-xs">3D Modeling</span>
+              <span class="skill-tag text-xs">WebGL</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Project 5 - Initially Hidden -->
+        <div class="project-card reveal-text hidden-project">
+          <div class="project-image">
+            <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Project 5" />
+            <div class="project-overlay">
+              <div class="project-overlay-content">
+                <a href="#" class="view-project-btn"> View Project </a>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">AR Shopping Experience</h3>
+            <p class="text-gray-500 text-sm mb-4">Augmented reality app for virtual product try-on</p>
+            <div class="flex gap-2">
+              <span class="skill-tag text-xs">AR</span>
+              <span class="skill-tag text-xs">Mobile</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Project 6 - Initially Hidden -->
+        <div class="project-card reveal-text hidden-project">
+          <div class="project-image">
+            <img src="https://images.unsplash.com/photo-1573804633927-bfcbcd1e273c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Project 6" />
+            <div class="project-overlay">
+              <div class="project-overlay-content">
+                <a href="#" class="view-project-btn"> View Project </a>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">Immersive Dashboard</h3>
+            <p class="text-gray-500 text-sm mb-4">Data visualization with 3D interactive elements</p>
+            <div class="flex gap-2">
+              <span class="skill-tag text-xs">Dashboard</span>
+              <span class="skill-tag text-xs">Data Viz</span>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      <!-- Load More Button -->
+      <button id="load-more-btn" class="btn-load-more">
+        Load More Projects
+      </button>
     </div>
   </section>
   
@@ -882,13 +965,13 @@
         </p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div class="card reveal-text">
           <div class="text-4xl mb-4">📧</div>
           <h3 class="text-xl font-bold mb-2">Email</h3>
           <p class="text-gray-500 text-sm mb-3">Let's discuss your 3D project</p>
-          <a href="mailto:sina@example.com" class="text-yellow-400 hover:text-yellow-300 transition text-sm">
-            sina@example.com
+          <a href="mailto:info@sinadesigner.ir" class="text-yellow-400 hover:text-yellow-300 transition text-sm">
+            info@sinadesigner.ir
           </a>
         </div>
         
@@ -896,8 +979,17 @@
           <div class="text-4xl mb-4">💬</div>
           <h3 class="text-xl font-bold mb-2">WhatsApp</h3>
           <p class="text-gray-500 text-sm mb-3">Quick chat about your ideas</p>
-          <a href="#" class="text-yellow-400 hover:text-yellow-300 transition text-sm">
-            +98 912 345 6789
+          <a href="https://wa.me/989173791457" class="text-yellow-400 hover:text-yellow-300 transition text-sm">
+            +98 917 379 1457
+          </a>
+        </div>
+        
+        <div class="card reveal-text">
+          <div class="text-4xl mb-4">💬</div>
+          <h3 class="text-xl font-bold mb-2">Telegram</h3>
+          <p class="text-gray-500 text-sm mb-3">Quick chat about your ideas</p>
+          <a href="https://t.me/cna_tv" class="text-yellow-400 hover:text-yellow-300 transition text-sm">
+            @sinadesigner
           </a>
         </div>
       </div>
@@ -924,7 +1016,7 @@
   <!-- Footer -->
   <footer class="py-8 px-6 border-t border-gray-800">
     <div class="max-w-6xl mx-auto text-center">
-      <p class="text-gray-600">© 2023 Sina Tavakoli. All rights reserved.</p>
+      <p class="text-gray-600">© 2025 Sina Tavakoli. All rights reserved.</p>
     </div>
   </footer>
   
@@ -1093,6 +1185,35 @@
         }
       }
     );
+    
+    // Load More functionality
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const hiddenProjects = document.querySelectorAll('.hidden-project');
+    
+    loadMoreBtn.addEventListener('click', () => {
+      hiddenProjects.forEach(project => {
+        project.style.display = 'block';
+        
+        // Animate the newly revealed projects
+        gsap.fromTo(project, 
+          { 
+            opacity: 0, 
+            y: 50,
+            scale: 0.9
+          },
+          { 
+            opacity: 1, 
+            y: 0,
+            scale: 1,
+            duration: 0.6,
+            ease: "back.out(1.7)"
+          }
+        );
+      });
+      
+      // Hide the button after all projects are shown
+      loadMoreBtn.style.display = 'none';
+    });
   </script>
 </body>
 </html>
