@@ -1,4 +1,5 @@
 <?php
+// send-email.php
 // Include configuration
 require_once 'config.php';
 
@@ -18,133 +19,245 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-// Google Calendar Configuration
-define('GOOGLE_CLIENT_ID', 'YOUR_GOOGLE_CLIENT_ID');
-define('GOOGLE_CLIENT_SECRET', 'YOUR_GOOGLE_CLIENT_SECRET');
-define('GOOGLE_REDIRECT_URI', 'https://yourdomain.com/oauth-callback.php');
+// Start session for CSRF protection
+session_start();
 
-// Initialize Google Client
-function getGoogleClient() {
-    $client = new Client();
-    $client->setApplicationName('Sina Tavakoli Appointment System');
-    $client->setScopes([Calendar::CALENDAR_EVENTS]);
-    $client->setClientId(GOOGLE_CLIENT_ID);
-    $client->setClientSecret(GOOGLE_CLIENT_SECRET);
-    $client->setRedirectUri(GOOGLE_REDIRECT_URI);
-    $client->setAccessType('offline');
-    $client->setPrompt('consent');
+// Generate CSRF token if not exists
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Security functions
+function sanitizeInput($data) {
+    if (is_array($data)) {
+        return array_map('sanitizeInput', $data);
+    }
+    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
+}
+
+function validateEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL) && 
+           preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email);
+}
+
+// Rate limiting
+function checkRateLimit() {
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $key = 'appointment_limit_' . md5($ip);
+    $limit = 3; // 3 appointments per day
+    $window = 86400; // 24 hours
     
-    // Load previously authorized token from file
-    $tokenPath = 'token.json';
-    if (file_exists($tokenPath)) {
-        $accessToken = json_decode(file_get_contents($tokenPath), true);
-        $client->setAccessToken($accessToken);
-        
-        // Refresh the token if it's expired
-        if ($client->isAccessTokenExpired()) {
-            if ($client->getRefreshToken()) {
-                $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            } else {
-                return null; // Need to re-authenticate
-            }
-            file_put_contents($tokenPath, json_encode($client->getAccessToken()));
+    $cacheFile = sys_get_temp_dir() . '/' . $key;
+    
+    if (file_exists($cacheFile)) {
+        $data = json_decode(file_get_contents($cacheFile), true);
+        if ($data['count'] >= $limit && (time() - $data['start']) < $window) {
+            http_response_code(429);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Too many appointment requests. Please try again tomorrow.',
+                'retry_after' => $window - (time() - $data['start'])
+            ]);
+            exit;
         }
     }
     
-    return $client;
-}
-
-// Create Google Meet event
-function createGoogleMeetEvent($formData) {
-    $client = getGoogleClient();
-    
-    if (!$client) {
-        throw new Exception('Google authentication required');
+    if (file_exists($cacheFile)) {
+        $data = json_decode(file_get_contents($cacheFile), true);
+        if ((time() - $data['start']) >= $window) {
+            $data = ['count' => 1, 'start' => time()];
+        } else {
+            $data['count']++;
+        }
+    } else {
+        $data = ['count' => 1, 'start' => time()];
     }
     
-    $service = new Calendar($client);
+    file_put_contents($cacheFile, json_encode($data));
     
-    // Parse date and time
-    $date = new DateTime($formData['date']);
-    $time = explode(':', $formData['time']);
-    $date->setTime($time[0], $time[1]);
-    
-    $startDateTime = $date->format('c');
-    $endDateTime = clone $date;
-    $endDateTime->add(new DateInterval('PT30M')); // 30 minutes meeting
-    
-    // Create event
-    $event = new Event();
-    $event->setSummary('Meeting with ' . $formData['firstName'] . ' ' . $formData['lastName']);
-    $event->setDescription($formData['message']);
-    
-    // Set start and end time
-    $start = new EventDateTime();
-    $start->setDateTime($startDateTime);
-    $start->setTimeZone('Asia/Tehran');
-    $event->setStart($start);
-    
-    $end = new EventDateTime();
-    $end->setDateTime($endDateTime);
-    $end->setTimeZone('Asia/Tehran');
-    $event->setEnd($end);
-    
-    // Add Google Meet conference
-    $conferenceData = new ConferenceData();
-    $createRequest = new CreateConferenceRequest();
-    $createRequest->setRequestId('meeting-' . time() . '-' . rand(1000, 9999));
-    
-    $conferenceSolutionKey = new ConferenceSolutionKey();
-    $conferenceSolutionKey->setEventType('hangoutsMeet');
-    $createRequest->setConferenceSolutionKey($conferenceSolutionKey);
-    
-    $conferenceData->setCreateRequest($createRequest);
-    $event->setConferenceData($conferenceData);
-    
-    // Add attendees
-    $attendees = [
-        [
-            'email' => $formData['email'],
-            'displayName' => $formData['firstName'] . ' ' . $formData['lastName']
-        ]
-    ];
-    $event->setAttendees($attendees);
-    
-    // Set reminders
-    $reminders = [
-        'useDefault' => false,
-        'overrides' => [
-            ['method' => 'email', 'minutes' => 24 * 60], // 1 day before
-            ['method' => 'popup', 'minutes' => 30] // 30 minutes before
-        ]
-    ];
-    $event->setReminders($reminders);
-    
-    // Insert event
-    $calendarId = 'primary';
-    $event = $service->events->insert($calendarId, $event, ['conferenceDataVersion' => 1]);
-    
-    return [
-        'meetLink' => $event->getHangoutLink(),
-        'eventId' => $event->getId(),
-        'eventLink' => $event->getHtmlLink()
-    ];
+    // Clean old files periodically
+    if (rand(1, 10) === 1) {
+        foreach (glob(sys_get_temp_dir() . '/appointment_limit_*') as $file) {
+            if (time() - filemtime($file) > $window) {
+                @unlink($file);
+            }
+        }
+    }
 }
 
-// Function to send email
-function sendAppointmentEmail($formData, $isAdmin = false, $meetData = null) {
-    $mail = new PHPMailer(true);
+// Log function with rotation
+function logError($message) {
+    $logDir = __DIR__ . '/logs';
+    if (!is_dir($logDir)) {
+        mkdir($logDir, 0755, true);
+    }
     
+    // Use date-based log files to prevent huge files
+    $logFile = $logDir . '/appointment_errors_' . date('Y-m-d') . '.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $logMessage = "[$timestamp] $message" . PHP_EOL;
+    file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+}
+
+// Initialize Google Client with better error handling
+function getGoogleClient() {
     try {
+        $client = new Client();
+        $client->setApplicationName('Sina Tavakoli Appointment System');
+        $client->setScopes([Calendar::CALENDAR_EVENTS]);
+        $client->setClientId(GOOGLE_CLIENT_ID);
+        $client->setClientSecret(GOOGLE_CLIENT_SECRET);
+        $client->setRedirectUri(GOOGLE_REDIRECT_URI);
+        $client->setAccessType('offline');
+        $client->setPrompt('consent');
+        
+        // Load previously authorized token from file
+        $tokenPath = __DIR__ . '/token.json';
+        if (file_exists($tokenPath)) {
+            $accessToken = json_decode(file_get_contents($tokenPath), true);
+            $client->setAccessToken($accessToken);
+            
+            // Refresh token if it's expired
+            if ($client->isAccessTokenExpired()) {
+                if ($client->getRefreshToken()) {
+                    $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+                    file_put_contents($tokenPath, json_encode($client->getAccessToken()));
+                } else {
+                    logError('Google authentication required - no refresh token available');
+                    return null;
+                }
+            }
+        } else {
+            logError('Google authentication required - no token file found');
+            return null;
+        }
+        
+        return $client;
+    } catch (Exception $e) {
+        logError('Error initializing Google Client: ' . $e->getMessage());
+        return null;
+    }
+}
+
+// Create Google Meet event with better error handling
+function createGoogleMeetEvent($formData) {
+    try {
+        $client = getGoogleClient();
+        
+        if (!$client) {
+            throw new Exception('Google authentication required. Please contact administrator.');
+        }
+        
+        $service = new Calendar($client);
+        
+        // Parse date and time with better validation
+        $date = DateTime::createFromFormat('Y-m-d', $formData['date']);
+        if (!$date) {
+            throw new Exception('Invalid date format');
+        }
+        
+        $timeParts = explode(':', $formData['time']);
+        if (count($timeParts) !== 2 || !is_numeric($timeParts[0]) || !is_numeric($timeParts[1])) {
+            throw new Exception('Invalid time format');
+        }
+        
+        $date->setTime((int)$timeParts[0], (int)$timeParts[1]);
+        $now = new DateTime();
+        
+        // Check if appointment is in the future
+        if ($date <= $now) {
+            throw new Exception('Appointment must be scheduled for a future date and time');
+        }
+        
+        $startDateTime = $date->format('c');
+        $endDateTime = clone $date;
+        $endDateTime->add(new DateInterval('PT30M')); // 30 minutes meeting
+        
+        // Create event
+        $event = new Event();
+        $event->setSummary('Meeting with ' . $formData['firstName'] . ' ' . $formData['lastName']);
+        $event->setDescription($formData['message'] ?? '');
+        
+        // Set start and end time
+        $start = new EventDateTime();
+        $start->setDateTime($startDateTime);
+        $start->setTimeZone('Asia/Tehran');
+        $event->setStart($start);
+        
+        $end = new EventDateTime();
+        $end->setDateTime($endDateTime);
+        $end->setTimeZone('Asia/Tehran');
+        $event->setEnd($end);
+        
+        // Add Google Meet conference
+        $conferenceData = new ConferenceData();
+        $createRequest = new CreateConferenceRequest();
+        $createRequest->setRequestId('meeting-' . time() . '-' . rand(1000, 9999));
+        
+        $conferenceSolutionKey = new ConferenceSolutionKey();
+        $conferenceSolutionKey->setEventType('hangoutsMeet');
+        $createRequest->setConferenceSolutionKey($conferenceSolutionKey);
+        
+        $conferenceData->setCreateRequest($createRequest);
+        $event->setConferenceData($conferenceData);
+        
+        // Add attendees
+        $attendees = [
+            [
+                'email' => $formData['email'],
+                'displayName' => $formData['firstName'] . ' ' . $formData['lastName']
+            ]
+        ];
+        $event->setAttendees($attendees);
+        
+        // Set reminders
+        $reminders = [
+            'useDefault' => false,
+            'overrides' => [
+                ['method' => 'email', 'minutes' => 24 * 60], // 1 day before
+                ['method' => 'popup', 'minutes' => 30] // 30 minutes before
+            ]
+        ];
+        $event->setReminders($reminders);
+        
+        // Insert event
+        $calendarId = 'primary';
+        $event = $service->events->insert($calendarId, $event, ['conferenceDataVersion' => 1]);
+        
+        return [
+            'meetLink' => $event->getHangoutLink(),
+            'eventId' => $event->getId(),
+            'eventLink' => $event->getHtmlLink()
+        ];
+    } catch (Exception $e) {
+        logError('Error creating Google Meet event: ' . $e->getMessage());
+        throw new Exception('Failed to create Google Meet event: ' . $e->getMessage());
+    }
+}
+
+// Function to send email with better error handling
+function sendAppointmentEmail($formData, $isAdmin = false, $meetData = null) {
+    try {
+        $mail = new PHPMailer(true);
+        
         // Server settings
         $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
+        $mail->Host       = SMTP_HOST;
         $mail->SMTPAuth   = true;
-        $mail->Username   = GMAIL_USER;
-        $mail->Password   = GMAIL_PASSWORD;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port       = 465;
+        $mail->Username   = SMTP_USERNAME;
+        $mail->Password   = SMTP_PASSWORD;
+        $mail->Port       = SMTP_PORT;
         $mail->CharSet    = 'UTF-8';
+        
+        // Set encryption
+        if (SMTP_ENCRYPTION === 'tls') {
+            $mail->SMTPSecure = PHPMailer::PHPMailer::ENCRYPTION_STARTTLS;
+        } elseif (SMTP_ENCRYPTION === 'ssl') {
+            $mail->SMTPSecure = PHPMailer\PHPMailer\ENCRYPTION_SMTPS;
+        } else {
+            $mail->SMTPSecure = '';
+            $mail->SMTPAutoTLS = false;
+        }
         
         // Set timeout
         $mail->Timeout = 30;
@@ -152,13 +265,13 @@ function sendAppointmentEmail($formData, $isAdmin = false, $meetData = null) {
         
         // Recipients
         if ($isAdmin) {
-            $mail->setFrom(GMAIL_USER, EMAIL_FROM_NAME);
+            $mail->setFrom(SMTP_USERNAME, EMAIL_FROM_NAME);
             $mail->addAddress(ADMIN_EMAIL);
             $mail->addReplyTo(EMAIL_REPLY_TO, EMAIL_FROM_NAME);
             $mail->Subject = 'New Appointment Scheduled - ' . $formData['firstName'] . ' ' . $formData['lastName'];
             $emailBody = generateAdminEmailTemplate($formData, $meetData);
         } else {
-            $mail->setFrom(GMAIL_USER, EMAIL_FROM_NAME);
+            $mail->setFrom(SMTP_USERNAME, EMAIL_FROM_NAME);
             $mail->addAddress($formData['email']);
             $mail->addReplyTo(EMAIL_REPLY_TO, EMAIL_FROM_NAME);
             $mail->Subject = 'Appointment Confirmed - Google Meet Link Included';
@@ -187,20 +300,21 @@ function sendAppointmentEmail($formData, $isAdmin = false, $meetData = null) {
     }
 }
 
-// Generate iCalendar invite
+// Generate iCalendar invite with better formatting
 function generateICalendarInvite($formData, $meetData) {
-    $date = new DateTime($formData['date']);
-    $time = explode(':', $formData['time']);
-    $date->setTime($time[0], $time[1]);
-    
-    $start = $date->format('Ymd\THis\Z');
-    $end = clone $date;
-    $end->add(new DateInterval('PT30M'));
-    $end = $end->format('Ymd\THis\Z');
-    
-    $uid = 'appointment-' . time() . '@yourdomain.com';
-    
-    return "BEGIN:VCALENDAR
+    try {
+        $date = DateTime::createFromFormat('Y-m-d', $formData['date']);
+        $timeParts = explode(':', $formData['time']);
+        $date->setTime((int)$timeParts[0], (int)$timeParts[1]);
+        
+        $start = $date->format('Ymd\THis\Z');
+        $end = clone $date;
+        $end->add(new DateInterval('PT30M'));
+        $end = $end->format('Ymd\THis\Z');
+        
+        $uid = 'appointment-' . time() . '@sinadesigner.ir';
+        
+        return "BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Sina Tavakoli//Appointment System//EN
 CALSCALE:GREGORIAN
@@ -221,14 +335,21 @@ TRIGGER:-PT30M
 END:VALARM
 END:VEVENT
 END:VCALENDAR";
+    } catch (Exception $e) {
+        logError('Error generating iCalendar: ' . $e->getMessage());
+        return '';
+    }
 }
 
-// Generate admin email template with Meet link
+// Generate admin email template with Meet link (FIXED)
 function generateAdminEmailTemplate($data, $meetData) {
     $subject = "New Appointment Scheduled";
-    $message = nl2br($data['message']);
+    $message = nl2br($data['message'] ?? '');
     $meetLink = $meetData['meetLink'] ?? '';
     $eventLink = $meetData['eventLink'] ?? '';
+    
+    // Handle phone field
+    $phone = isset($data['phone']) ? $data['phone'] : 'Not provided';
     
     return "
     <div style='font-family: \"Inter\", sans-serif; background-color: #1a1a2e; color: #ffffff; padding: 30px; border-radius: 10px; max-width: 600px;'>
@@ -250,7 +371,7 @@ function generateAdminEmailTemplate($data, $meetData) {
                 </tr>
                 <tr>
                     <td style='padding: 8px 0; width: 150px; color: #aaaaaa;'>Phone:</td>
-                    <td style='padding: 8px 0;'>{$data['phone']}</td>
+                    <td style='padding: 8px 0;'>{$phone}</td>
                 </tr>
                 <tr>
                     <td style='padding: 8px 0; width: 150px; color: #aaaaaa;'>Date:</td>
@@ -270,7 +391,7 @@ function generateAdminEmailTemplate($data, $meetData) {
         " . ($meetLink ? "
         <div style='background-color: rgba(249, 199, 79, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #f9c74f;'>
             <h2 style='font-size: 18px; margin-bottom: 10px; color: #f9c74f;'>📹 Google Meet Link</h2>
-            <p style='margin-bottom: 10px; color: #dddddd;'>Join the meeting:</p>
+            <p style='margin-bottom: 10px; color: #dddddd;'>Join meeting:</p>
             <a href='{$meetLink}' style='color: #f9c74f; text-decoration: none; font-weight: 600; font-size: 16px;'>{$meetLink}</a>
             <p style='margin-top: 10px; font-size: 12px; color: #aaaaaa;'>
                 <a href='{$eventLink}' style='color: #f9c74f;'>View in Google Calendar</a>
@@ -284,7 +405,7 @@ function generateAdminEmailTemplate($data, $meetData) {
     </div>";
 }
 
-// Generate user email template with Meet link
+// Generate user email template with Meet link (unchanged)
 function generateUserEmailTemplate($data, $meetData) {
     $meetLink = $meetData['meetLink'] ?? '';
     $eventLink = $meetData['eventLink'] ?? '';
@@ -331,9 +452,9 @@ function generateUserEmailTemplate($data, $meetData) {
             <h2 style='font-size: 18px; margin-bottom: 10px; color: #f9c74f;'>📋 What's Next?</h2>
             <ul style='color: #dddddd; margin: 0; padding-left: 20px;'>
                 <li style='margin-bottom: 8px;'>✅ Check your email for calendar invitation</li>
-                <li style='margin-bottom: 8px;'>💻 Test your camera and microphone before the call</li>
+                <li style='margin-bottom: 8px;'>💻 Test your camera and microphone before call</li>
                 <li style='margin-bottom: 8px;'>📝 Prepare any questions or topics to discuss</li>
-                <li style='margin-bottom: 8px;'>🔇 Find a quiet place for the meeting</li>
+                <li style='margin-bottom: 8px;'>🔇 Find a quiet place for meeting</li>
                 <li style='margin-bottom: 8px;'>⏰ Join 5 minutes early</li>
             </ul>
         </div>
@@ -345,8 +466,28 @@ function generateUserEmailTemplate($data, $meetData) {
     </div>";
 }
 
-// Main execution
+// Main execution with better error handling
 try {
+    // Set CORS headers
+    header('Access-Control-Allow-Origin: *');
+    header('Content-Type: application/json');
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    
+    // Handle preflight requests
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(200);
+        exit(0);
+    }
+    
+    // Only allow POST requests
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method');
+    }
+    
+    // Check rate limit
+    checkRateLimit();
+    
     // Get POST data
     $json = file_get_contents('php://input');
     if (empty($json)) {
@@ -356,6 +497,11 @@ try {
     $data = json_decode($json, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         throw new Exception('Invalid JSON data');
+    }
+    
+    // Verify CSRF token
+    if (!isset($data['csrf_token']) || $data['csrf_token'] !== $_SESSION['csrf_token']) {
+        throw new Exception('Invalid CSRF token');
     }
     
     // Validate required fields
@@ -372,6 +518,16 @@ try {
     // Validate email
     if (!validateEmail($data['email'])) {
         throw new Exception('Invalid email address');
+    }
+    
+    // Validate date format (YYYY-MM-DD)
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['date'])) {
+        throw new Exception('Invalid date format. Please use YYYY-MM-DD format');
+    }
+    
+    // Validate time format (HH:MM)
+    if (!preg_match('/^\d{2}:\d{2}$/', $data['time'])) {
+        throw new Exception('Invalid time format. Please use HH:MM format');
     }
     
     // Create Google Meet event
